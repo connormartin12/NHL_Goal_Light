@@ -1557,7 +1557,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ESP32.elf::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ESP32.elf-95a3888ab16fce3a9757.json",
+					"jsonFile" : "target-ESP32.elf-9a7497df9f9aba5f6d0c.json",
 					"name" : "ESP32.elf",
 					"projectIndex" : 0
 				},
@@ -1634,7 +1634,7 @@
 				{
 					"directoryIndex" : 12,
 					"id" : "__idf_esp_app_format::@08c2bdce7fd85cdbea06",
-					"jsonFile" : "target-__idf_esp_app_format-192e77cb02af55c873ce.json",
+					"jsonFile" : "target-__idf_esp_app_format-40d6c80f09572b27b370.json",
 					"name" : "__idf_esp_app_format",
 					"projectIndex" : 1
 				},
@@ -1711,7 +1711,7 @@
 				{
 					"directoryIndex" : 65,
 					"id" : "__idf_esp_local_ctrl::@d6aad58d2946e56208ef",
-					"jsonFile" : "target-__idf_esp_local_ctrl-5507f6c7e5963e782d84.json",
+					"jsonFile" : "target-__idf_esp_local_ctrl-8c970f2481457357e2df.json",
 					"name" : "__idf_esp_local_ctrl",
 					"projectIndex" : 1
 				},
@@ -1844,7 +1844,7 @@
 				{
 					"directoryIndex" : 81,
 					"id" : "__idf_main::@7368607ed66887415643",
-					"jsonFile" : "target-__idf_main-91bd2a1145196c899070.json",
+					"jsonFile" : "target-__idf_main-bacade9753fb3f1560be.json",
 					"name" : "__idf_main",
 					"projectIndex" : 1
 				},
@@ -1970,7 +1970,7 @@
 				{
 					"directoryIndex" : 80,
 					"id" : "__idf_wifi_provisioning::@9d7e7ffe1b15746c1098",
-					"jsonFile" : "target-__idf_wifi_provisioning-3b4134a3da922d40a5d9.json",
+					"jsonFile" : "target-__idf_wifi_provisioning-6b51c82df09c388aa691.json",
 					"name" : "__idf_wifi_provisioning",
 					"projectIndex" : 1
 				},
@@ -1991,7 +1991,7 @@
 				{
 					"directoryIndex" : 21,
 					"id" : "__ldgen_output_sections.ld::@874df54e61e20112dfd4",
-					"jsonFile" : "target-__ldgen_output_sections.ld-1bf4a7d1e2e2a65433a7.json",
+					"jsonFile" : "target-__ldgen_output_sections.ld-321a66b872ea49f41ea3.json",
 					"name" : "__ldgen_output_sections.ld",
 					"projectIndex" : 1
 				},
@@ -2271,7 +2271,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "uf2::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-uf2-f46349f065f6c892d1f2.json",
+					"jsonFile" : "target-uf2-39fb8e36961a752bf690.json",
 					"name" : "uf2",
 					"projectIndex" : 0
 				},
