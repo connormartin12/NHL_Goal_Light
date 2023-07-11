@@ -21,7 +21,6 @@ void ota_func(void *params)
     {
         xSemaphoreTake(ota_semaphore, portMAX_DELAY);
         run_ota();
-        printf("Hello!!!");
     }
 }
 
