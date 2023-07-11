@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include "esp_log.h"
 #include "nvs_flash.h"
 
 #include "wifi.h"
+
+#define WIFI_TAG "WiFi"
 
 void app_main(void)
 {
@@ -14,5 +17,6 @@ void app_main(void)
     ESP_ERROR_CHECK(retry);
 
     wifi_init();
-    ESP_ERROR_CHECK(wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000));
+    esp_err_t err = wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000);
+    if (err) ESP_LOGE(WIFI_TAG, "Failed to connect to the AP");
 }

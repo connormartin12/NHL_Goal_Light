@@ -21,7 +21,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
         case WIFI_EVENT_STA_DISCONNECTED:
-            ESP_LOGI(TAG, "Failed to connect to the AP");
+            ESP_LOGI(TAG, "Disconnected from AP");
             xEventGroupSetBits(wifi_event_group, WIFI_FAIL_BIT);
             break;
         case IP_EVENT_STA_GOT_IP:
