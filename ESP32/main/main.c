@@ -11,6 +11,7 @@
 #include "wifi.h"
 
 #define WIFI_TAG "WiFi"
+#define OTA_TAG "OTA"
 
 /* Temporary semaphore code */
 SemaphoreHandle_t ota_semaphore;
@@ -20,7 +21,9 @@ void ota_func(void *params)
     while (true)
     {
         xSemaphoreTake(ota_semaphore, portMAX_DELAY);
-        run_ota();
+        esp_err_t err = run_ota();
+        if (err) 
+            ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
     }
 }
 
