@@ -1,6 +1,8 @@
-#ifndef wifi_h
-#define wifi_h
+#ifndef ota_h
+#define ota_h
 
+#include "esp_err.h"
 
+esp_err_t run_ota(void);
 
 #endif
