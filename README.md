@@ -1,8 +1,8 @@
 # NHL_Goal_Light
 
-The goal of this project is to create a device with the capability of collecting and displaying the score of an ongoing NHL game which is determined by the user. The device will play a sound, set off a goal light, and supply text output on an OLED screen when the user's team scores in real time.
+The goal of this project is to create a device with the capability of collecting and displaying the score of an ongoing NHL game. The device will play a goal horn sound, set off a goal light, and supply text output on an OLED screen as the user's team scores in real time.
 
-To achieve this, the project has been divided into two main parts: The ESP32 part and the Mobile App part.
+To achieve this, the project has been divided into two main parts: The ESP32 and the mobile app.
 
 ## ESP32
 
