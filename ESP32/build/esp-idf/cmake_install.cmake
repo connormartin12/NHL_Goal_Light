@@ -392,3 +392,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("C:/Users/death/GitHub/NHL_Goal_Light/ESP32/build/esp-idf/main/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("C:/Users/death/GitHub/NHL_Goal_Light/ESP32/build/esp-idf/wifi/cmake_install.cmake")
+endif()
+
