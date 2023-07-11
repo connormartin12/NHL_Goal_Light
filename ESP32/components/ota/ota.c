@@ -22,8 +22,8 @@ esp_err_t validate_image_header(esp_app_desc_t *incoming_ota_desc)
     esp_app_desc_t running_partition_description;
     esp_ota_get_partition_description(running_partition, &running_partition_description);
 
-    ESP_LOGI(TAG, "Current version is %s\n", running_partition_description.version);
-    ESP_LOGI(TAG, "New version is %s\n", incoming_ota_desc->version);
+    ESP_LOGI(TAG, "Current version is %s", running_partition_description.version);
+    ESP_LOGI(TAG, "New version is %s", incoming_ota_desc->version);
 
     if (strcmp(running_partition_description.version, incoming_ota_desc->version) == 0)
     {

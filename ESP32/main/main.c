@@ -59,4 +59,5 @@ void app_main(void)
     ota_semaphore = xSemaphoreCreateBinary();
     xTaskCreate(ota_func, "run_ota", 1024 * 8, NULL, 2, NULL);
     /* Temporary button/semaphore code ends */
+    printf("HEHEHEHEHE!");
 }
