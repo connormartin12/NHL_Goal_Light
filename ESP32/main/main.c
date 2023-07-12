@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "esp_log.h"
+#include "nvs.h"
 #include "nvs_flash.h"
 
 #include "freertos/FreeRTOS.h"
@@ -10,8 +11,9 @@
 #include "ota.h"
 #include "wifi.h"
 
-#define WIFI_TAG "WiFi"
+#define NVS_TAG "NVS"
 #define OTA_TAG "OTA"
+#define WIFI_TAG "WiFi"
 
 /* Temporary semaphore code */
 SemaphoreHandle_t ota_semaphore;
@@ -42,6 +44,8 @@ void app_main(void)
         retry = nvs_flash_init();
     }
     ESP_ERROR_CHECK(retry);
+
+    //ESP_ERROR_CHECK(nvs_flash_init_partition("MyNVS"));
 
     wifi_init();
     esp_err_t err = wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000);
