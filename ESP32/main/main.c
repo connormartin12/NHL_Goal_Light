@@ -8,6 +8,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 
+#include "bluetooth.h"
 #include "ota.h"
 #include "wifi.h"
 
@@ -43,11 +44,20 @@ void on_button_pushed(void *params)
 
 void app_main(void)
 {
+    /* Normal flash init */
+    esp_err_t retry = nvs_flash_init();
+    if (retry == ESP_ERR_NVS_NO_FREE_PAGES || ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        retry = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(retry);
+
     ESP_ERROR_CHECK(nvs_flash_init_partition("MyNvs"));
     nvs_handle user_info_handle;
     ESP_ERROR_CHECK(nvs_open_from_partition("MyNvs", "info_store", NVS_READWRITE, &user_info_handle));
 
-    char infoKey[] = "key";
+    const char infoKey[] = "key";
     User_Info userInfo;
     size_t userInfoSize = sizeof(User_Info);
 
@@ -75,14 +85,6 @@ void app_main(void)
     //     nvs_close(user_info_handle);
     // }
 
-    /* Normal flash init */
-    esp_err_t retry = nvs_flash_init();
-    if (retry == ESP_ERR_NVS_NO_FREE_PAGES || ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        retry = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(retry);
 
     wifi_connect_sta("AubbyWiFi", "Cinnamon1234");
 

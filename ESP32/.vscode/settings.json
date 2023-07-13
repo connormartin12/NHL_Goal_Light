@@ -27,6 +27,14 @@
         "nvs.h": "c",
         "functional": "c",
         "nvs_storage.h": "c",
-        "esp_err.h": "c"
+        "esp_err.h": "c",
+        "ble.h": "c",
+        "my_ble.h": "c",
+        "ble_svc_gap.h": "c",
+        "nimble_port.h": "c",
+        "nvs_flash.h": "c",
+        "semphr.h": "c",
+        "bluetooth.h": "c",
+        "stdio.h": "c"
     }
 }
