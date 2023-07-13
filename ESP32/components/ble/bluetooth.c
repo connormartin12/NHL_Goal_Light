@@ -15,9 +15,21 @@ uint8_t ble_addr_type;
 
 void ble_app_advertise(void);
 
+void stop_ble()
+{
+    int rc = nimble_port_stop();
+    if (rc == 0) {
+        nimble_port_freertos_deinit();
+        nimble_port_deinit();
+    } else {
+        ESP_LOGI(TAG, "nimble_port_stop failed");
+    }
+}
+
 static int user_info_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     printf("Incoming message: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
+    stop_ble();
     return 0;
 }
 

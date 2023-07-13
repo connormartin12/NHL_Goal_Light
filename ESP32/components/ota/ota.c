@@ -31,7 +31,7 @@ esp_err_t validate_image_header(esp_app_desc_t *incoming_ota_desc)
         return ESP_FAIL;
     }
 
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t run_ota(void)
