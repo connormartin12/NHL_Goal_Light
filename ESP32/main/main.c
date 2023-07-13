@@ -8,7 +8,6 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 
-#include "nvs_storage.h"
 #include "ota.h"
 #include "wifi.h"
 
@@ -52,8 +51,6 @@ void app_main(void)
     User_Info userInfo;
     size_t userInfoSize = sizeof(User_Info);
 
-    vTaskDelay(pdMS_TO_TICKS(5000)); // Fake delay to mimic not having values initially stored in flash
-
     esp_err_t result = nvs_get_blob(user_info_handle, infoKey, (void *)&userInfo, &userInfoSize);
     switch (result)
     {
@@ -62,7 +59,6 @@ void app_main(void)
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);
-            nvs_close(user_info_handle);
             break;
         default:
             ESP_LOGE(NVS_TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(result));
@@ -70,16 +66,14 @@ void app_main(void)
     }
 
     /* Temp nvs storage code */
-    if (result != ESP_OK)
-    {
-        sprintf(userInfo.wifi_ssid, "AubbyWiFi");
-        sprintf(userInfo.wifi_password, "Cinnamon1234");
-        ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void*)&userInfo, sizeof(User_Info)));
-        ESP_ERROR_CHECK(nvs_commit(user_info_handle));
-        nvs_close(user_info_handle);
-    }
-
-    storage_init();
+    // if (result != ESP_OK)
+    // {
+    //     sprintf(userInfo.wifi_ssid, "AubbyWiFi");
+    //     sprintf(userInfo.wifi_password, "Cinnamon1234");
+    //     ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void*)&userInfo, userInfoSize));
+    //     ESP_ERROR_CHECK(nvs_commit(user_info_handle));
+    //     nvs_close(user_info_handle);
+    // }
 
     /* Normal flash init */
     esp_err_t retry = nvs_flash_init();
@@ -91,7 +85,7 @@ void app_main(void)
     ESP_ERROR_CHECK(retry);
 
     wifi_init();
-    esp_err_t err = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password, 10000);
+    esp_err_t err = wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000);
     if (err) ESP_LOGE(WIFI_TAG, "Failed to connect to the AP");
 
     /* Temporary button/semaphore code */
