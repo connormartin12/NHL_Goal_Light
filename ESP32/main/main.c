@@ -8,6 +8,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 
+#include "nvs_storage.h"
 #include "ota.h"
 #include "wifi.h"
 
@@ -77,6 +78,8 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_commit(user_info_handle));
         nvs_close(user_info_handle);
     }
+
+    storage_init();
 
     /* Normal flash init */
     esp_err_t retry = nvs_flash_init();
