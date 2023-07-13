@@ -84,9 +84,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(retry);
 
-    wifi_init();
-    esp_err_t err = wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000);
-    if (err) ESP_LOGE(WIFI_TAG, "Failed to connect to the AP");
+    wifi_connect_sta("AubbyWiFi", "Cinnamon1234");
 
     /* Temporary button/semaphore code */
     gpio_config_t gpioConfig = {
