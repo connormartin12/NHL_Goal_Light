@@ -26,6 +26,7 @@
         "wifi.h": "c",
         "nvs.h": "c",
         "functional": "c",
-        "nvs_storage.h": "c"
+        "nvs_storage.h": "c",
+        "esp_err.h": "c"
     }
 }
