@@ -8,12 +8,19 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 
+#include "nvs_storage.h"
 #include "ota.h"
 #include "wifi.h"
 
 #define NVS_TAG "NVS"
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
+
+typedef struct wifi_credentials_struct
+{
+    char ssid[50];
+    char password[50];
+} WiFi_Credentials;
 
 /* Temporary semaphore code */
 SemaphoreHandle_t ota_semaphore;
@@ -45,7 +52,34 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(retry);
 
-    //ESP_ERROR_CHECK(nvs_flash_init_partition("MyNVS"));
+    // ESP_ERROR_CHECK(nvs_flash_init_partition("MyNvs"));
+    // nvs_handle credential_storage;
+    // ESP_ERROR_CHECK(nvs_open_from_partition("MyNvs", "cred_store", NVS_READWRITE, &credential_storage));
+
+    // static const char credentialsKey[] = "key";
+    // WiFi_Credentials my_credentials;
+    // size_t credentialSize = sizeof(WiFi_Credentials);
+
+    // esp_err_t result = nvs_get_blob(credential_storage, credentialsKey, (void *)&my_credentials, &credentialSize);
+    esp_err_t result = storage_init();
+    switch (result)
+    {
+        case ESP_ERR_NVS_NOT_FOUND:
+            ESP_LOGE(NVS_TAG, "Value not set yet");
+            // sprintf(my_credentials.ssid, "AubbyWiFi");
+            // sprintf(my_credentials.password, "Cinnamon1234");
+            // ESP_ERROR_CHECK(nvs_set_blob(credential_storage, credentialsKey, (void*)&my_credentials, sizeof(WiFi_Credentials)));
+            // ESP_ERROR_CHECK(nvs_commit(credential_storage));
+            // nvs_close(credential_storage);
+            // esp_restart();
+            break;
+        case ESP_OK:
+            ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", my_credentials.ssid, my_credentials.password);
+            break;
+        default:
+            ESP_LOGE(NVS_TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(result));
+            break;
+    }
 
     wifi_init();
     esp_err_t err = wifi_connect_sta("AubbyWiFi", "Cinnamon1234", 10000);

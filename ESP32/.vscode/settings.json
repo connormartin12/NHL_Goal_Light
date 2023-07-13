@@ -23,6 +23,9 @@
         "task.h": "c",
         "esp_https_ota.h": "c",
         "esp_ota_ops.h": "c",
-        "wifi.h": "c"
+        "wifi.h": "c",
+        "nvs.h": "c",
+        "functional": "c",
+        "nvs_storage.h": "c"
     }
 }
