@@ -66,6 +66,7 @@ void app_main(void)
     {
         case ESP_ERR_NVS_NOT_FOUND:
             ESP_LOGE(NVS_TAG, "Value not set yet");
+            run_ble();
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);
