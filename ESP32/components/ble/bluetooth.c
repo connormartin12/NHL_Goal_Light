@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
+#include "freertos/event_groups.h"
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
 #include "host/ble_hs.h"
@@ -11,25 +12,18 @@
 #define DEVICE_NAME "ESP32"
 #define DEVICE_SERVICE 0xFFFF
 #define DEVICE_WRITE 0xFF01
+
+EventGroupHandle_t eventGroup;
+#define SSID_BIT BIT2
+
 uint8_t ble_addr_type;
 
 void ble_app_advertise(void);
 
-void stop_ble()
-{
-    int rc = nimble_port_stop();
-    if (rc == 0) {
-        nimble_port_freertos_deinit();
-        nimble_port_deinit();
-    } else {
-        ESP_LOGI(TAG, "nimble_port_stop failed");
-    }
-}
-
 static int user_info_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     printf("Incoming message: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
-    stop_ble();
+    xEventGroupSetBits(eventGroup, SSID_BIT);
     return 0;
 }
 
@@ -104,6 +98,8 @@ void ble_app_on_sync(void)
 void host_task(void *param)
 {
     nimble_port_run();
+
+    nimble_port_freertos_deinit();
 }
 
 void run_ble()
@@ -119,4 +115,25 @@ void run_ble()
 
     ble_hs_cfg.sync_cb = ble_app_on_sync;
     nimble_port_freertos_init(host_task);
+}
+
+void stop_ble()
+{
+    int rc = nimble_port_stop();
+    if (rc == 0)
+        nimble_port_deinit();
+    else
+        ESP_LOGI(TAG, "nimble_port_stop failed");
+}
+
+esp_err_t all_values_set()
+{
+    eventGroup = xEventGroupCreate();
+    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT, true, true, portMAX_DELAY);
+    if (bits)
+        return ESP_OK;
+    else {
+        ESP_LOGE(TAG, "UNEXPECTED ERROR GETTING USER INFO BITS");
+        return ESP_FAIL;
+    }
 }

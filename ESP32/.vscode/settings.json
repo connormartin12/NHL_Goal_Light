@@ -35,6 +35,7 @@
         "nvs_flash.h": "c",
         "semphr.h": "c",
         "bluetooth.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "nimble_port_freertos.h": "c"
     }
 }
