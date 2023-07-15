@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include "bluetooth.h"
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
 #include "freertos/event_groups.h"
@@ -11,19 +13,35 @@
 #define TAG "BLE"
 #define DEVICE_NAME "ESP32"
 #define DEVICE_SERVICE 0xFFFF
-#define DEVICE_WRITE 0xFF01
+#define SSID_WRITE     0xFF01
+#define PASSWORD_WRITE 0xFF02
 
 EventGroupHandle_t eventGroup;
-#define SSID_BIT BIT2
+#define SSID_BIT     BIT2
+#define PASSWORD_BIT BIT3
+
+static const User_Info EmptyStruct;
+User_Info info_buffer;
 
 uint8_t ble_addr_type;
 
 void ble_app_advertise(void);
 
-static int user_info_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int user_ssid_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    printf("Incoming message: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
+    memcpy(info_buffer.wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
+    info_buffer.wifi_ssid[ctxt->om->om_len] = '\x0';
+    printf("Incoming message: %s\n", info_buffer.wifi_ssid);
     xEventGroupSetBits(eventGroup, SSID_BIT);
+    return 0;
+}
+
+static int user_password_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    memcpy(info_buffer.wifi_password, ctxt->om->om_data, ctxt->om->om_len);
+    info_buffer.wifi_password[ctxt->om->om_len] = '\x0';
+    printf("Incoming message: %s\n", info_buffer.wifi_password);
+    xEventGroupSetBits(eventGroup, PASSWORD_BIT);
     return 0;
 }
 
@@ -34,9 +52,14 @@ static const struct ble_gatt_svc_def gatt_svcs[] = {
         .characteristics = (struct ble_gatt_chr_def[])
         {
             {
-                .uuid = BLE_UUID16_DECLARE(DEVICE_WRITE), // Longest write is about 222 bytes
+                .uuid = BLE_UUID16_DECLARE(SSID_WRITE), // Longest write is about 222 bytes
                 .flags = BLE_GATT_CHR_F_WRITE,
-                .access_cb = user_info_write
+                .access_cb = user_ssid_write
+            },
+            {
+                .uuid = BLE_UUID16_DECLARE(PASSWORD_WRITE), // Longest write is about 222 bytes
+                .flags = BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_password_write
             }, {0}
         }
     }, {0}
@@ -102,7 +125,7 @@ void host_task(void *param)
     nimble_port_freertos_deinit();
 }
 
-void run_ble()
+void run_ble(void)
 {
     nimble_port_init();
 
@@ -129,11 +152,21 @@ void stop_ble()
 esp_err_t all_values_set()
 {
     eventGroup = xEventGroupCreate();
-    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT, true, true, portMAX_DELAY);
+    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT | PASSWORD_BIT, true, true, portMAX_DELAY);
     if (bits)
         return ESP_OK;
     else {
         ESP_LOGE(TAG, "UNEXPECTED ERROR GETTING USER INFO BITS");
         return ESP_FAIL;
     }
+}
+
+struct user_info_struct get_user_info(void)
+{
+    return info_buffer;
+}
+
+void reset_struct(void)
+{
+    info_buffer = EmptyStruct;
 }

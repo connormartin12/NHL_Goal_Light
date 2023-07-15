@@ -14,33 +14,33 @@
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
 
-typedef struct user_info_struct
+const char infoKey[] = "key";
+User_Info userInfo;  
+size_t userInfoSize = sizeof(User_Info);
+nvs_handle user_info_handle;
+
+void request_user_info()
 {
-    char wifi_ssid[33];
-    char wifi_password[64];
-} User_Info;
+    run_ble();
+    esp_err_t err = all_values_set();
+    if (err)
+        ESP_ERROR_CHECK(all_values_set());
+    stop_ble();
+    userInfo = get_user_info();
+    reset_struct();
+}
 
 void app_main(void)
 {
-
     ESP_ERROR_CHECK(nvs_flash_init_partition("MyNvs"));
-    nvs_handle user_info_handle;
     ESP_ERROR_CHECK(nvs_open_from_partition("MyNvs", "info_store", NVS_READWRITE, &user_info_handle));
-
-    const char infoKey[] = "key";
-    User_Info userInfo;
-    size_t userInfoSize = sizeof(User_Info);
 
     esp_err_t result = nvs_get_blob(user_info_handle, infoKey, (void *)&userInfo, &userInfoSize);
     switch (result)
     {
         case ESP_ERR_NVS_NOT_FOUND:
             ESP_LOGE(NVS_TAG, "User info not set yet");
-            run_ble();
-            esp_err_t check = all_values_set();
-            if (check)
-                ESP_ERROR_CHECK(all_values_set());
-            stop_ble();
+            request_user_info();
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);
@@ -58,7 +58,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(retry);
 
-    wifi_connect_sta("AubbyWiFi", "Cinnamon1234");
+    wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
 
     esp_err_t err = run_ota();
     if (err) 

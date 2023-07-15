@@ -36,6 +36,8 @@
         "semphr.h": "c",
         "bluetooth.h": "c",
         "stdio.h": "c",
-        "nimble_port_freertos.h": "c"
+        "nimble_port_freertos.h": "c",
+        "esp_log.h": "c",
+        "ble_svc_gatt.h": "c"
     }
 }
