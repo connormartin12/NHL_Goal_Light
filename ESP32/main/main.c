@@ -3,10 +3,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 // #include "freertos/event_groups.h"
-#include "nvs.h"
 #include "nvs_flash.h"
 
 #include "bluetooth.h"
+#include "nvs_storage.h"
 #include "ota.h"
 #include "wifi.h"
 
@@ -14,10 +14,7 @@
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
 
-const char infoKey[] = "key";
 User_Info userInfo;  
-size_t userInfoSize = sizeof(User_Info);
-nvs_handle user_info_handle;
 
 void request_user_info()
 {
@@ -28,14 +25,12 @@ void request_user_info()
     stop_ble();
     userInfo = get_user_info();
     reset_struct();
+    store_user_info(&userInfo);
 }
 
 void app_main(void)
 {
-    ESP_ERROR_CHECK(nvs_flash_init_partition("MyNvs"));
-    ESP_ERROR_CHECK(nvs_open_from_partition("MyNvs", "info_store", NVS_READWRITE, &user_info_handle));
-
-    esp_err_t result = nvs_get_blob(user_info_handle, infoKey, (void *)&userInfo, &userInfoSize);
+    esp_err_t result = get_stored_info(&userInfo);
     switch (result)
     {
         case ESP_ERR_NVS_NOT_FOUND:
@@ -63,14 +58,4 @@ void app_main(void)
     esp_err_t err = run_ota();
     if (err) 
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
-
-    /* Temp nvs storage code */
-    // if (result != ESP_OK)
-    // {
-    //     sprintf(userInfo.wifi_ssid, "AubbyWiFi");
-    //     sprintf(userInfo.wifi_password, "Cinnamon1234");
-    //     ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void*)&userInfo, userInfoSize));
-    //     ESP_ERROR_CHECK(nvs_commit(user_info_handle));
-    //     nvs_close(user_info_handle);
-    // }
 }
