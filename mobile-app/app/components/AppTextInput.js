@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 
-function AppTextInput({ placeholder }) {
+function AppTextInput({ placeholder, ...otherProps }) {
     return (
         <View style={styles.container}>
-            <TextInput placeholder={placeholder} placeholderTextColor="#636969" style={styles.text} />
+            <TextInput 
+                placeholder={placeholder}
+                placeholderTextColor="#636969"
+                style={styles.text}
+                {...otherProps} />
         </View>
     );
 }
