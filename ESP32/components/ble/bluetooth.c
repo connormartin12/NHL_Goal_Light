@@ -21,8 +21,7 @@ EventGroupHandle_t eventGroup;
 #define SSID_BIT     BIT2
 #define PASSWORD_BIT BIT3
 
-static const User_Info EmptyStruct;
-User_Info info_buffer;
+User_Info *info_buffer;
 
 uint8_t ble_addr_type;
 
@@ -30,18 +29,18 @@ void ble_app_advertise(void);
 
 static int user_ssid_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    memcpy(info_buffer.wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
-    info_buffer.wifi_ssid[ctxt->om->om_len] = '\x0';
-    printf("Incoming message: %s\n", info_buffer.wifi_ssid);
+    memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
+    info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
+    printf("Incoming message: %s\n", info_buffer->wifi_ssid);
     xEventGroupSetBits(eventGroup, SSID_BIT);
     return 0;
 }
 
 static int user_password_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    memcpy(info_buffer.wifi_password, ctxt->om->om_data, ctxt->om->om_len);
-    info_buffer.wifi_password[ctxt->om->om_len] = '\x0';
-    printf("Incoming message: %s\n", info_buffer.wifi_password);
+    memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
+    info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
+    printf("Incoming message: %s\n", info_buffer->wifi_password);
     xEventGroupSetBits(eventGroup, PASSWORD_BIT);
     return 0;
 }
@@ -126,8 +125,10 @@ void host_task(void *param)
     nimble_port_freertos_deinit();
 }
 
-void run_ble(void)
+void run_ble(User_Info *passed_structure)
 {
+    info_buffer = passed_structure;
+
     nimble_port_init();
 
     ble_svc_gap_device_name_set(DEVICE_NAME);
@@ -160,14 +161,4 @@ esp_err_t all_values_set()
         ESP_LOGE(TAG, "UNEXPECTED ERROR GETTING USER INFO BITS");
         return ESP_FAIL;
     }
-}
-
-struct user_info_struct get_user_info(void)
-{
-    return info_buffer;
-}
-
-void reset_struct(void)
-{
-    info_buffer = EmptyStruct;
 }
