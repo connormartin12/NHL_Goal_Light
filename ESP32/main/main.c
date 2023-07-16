@@ -2,7 +2,6 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-// #include "freertos/event_groups.h"
 #include "nvs_flash.h"
 
 #include "bluetooth.h"
@@ -18,13 +17,11 @@ User_Info userInfo;
 
 void request_user_info()
 {
-    run_ble();
+    run_ble(&userInfo);
     esp_err_t err = all_values_set();
     if (err)
         ESP_ERROR_CHECK(all_values_set());
     stop_ble();
-    userInfo = get_user_info();
-    reset_struct();
     store_user_info(&userInfo);
 }
 
