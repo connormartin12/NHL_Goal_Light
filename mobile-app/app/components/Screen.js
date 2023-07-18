@@ -3,7 +3,7 @@ import {StyleSheet, SafeAreaView, StatusBar, View} from 'react-native';
 
 function Screen({ children, style }) {
     return (
-        <SafeAreaView style={[styles.container, style]}>
+        <SafeAreaView style={[styles.screen, style]}>
             <View style={[styles.view, style]}>{children}</View>
         </SafeAreaView>
     );

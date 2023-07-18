@@ -3,14 +3,12 @@ import { View, StyleSheet, TextInput } from 'react-native';
 
 import textStyles from '../config/textStyles';
 
-function AppTextInput({ placeholder, ...otherProps }) {
+function AppTextInput({ width="100%", ...otherProps }) {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { width }]}>
             <TextInput 
-                placeholder={placeholder}
-                placeholderTextColor="#636969"
                 style={textStyles.default}
-                {...otherProps} />
+                {...otherProps}/>
         </View>
     );
 }
