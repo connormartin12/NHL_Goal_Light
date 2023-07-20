@@ -1,10 +1,17 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import * as Yup from 'yup';
 
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
 import Screen from '../components/Screen';
 import TeamPickerComponent from '../components/TeamPickerComponent';
 import teams from '../config/teams';
+
+let validationSchema = Yup.object({
+    ssid: Yup.string().required().min(1).max(32).label("WiFi SSID"),
+    password: Yup.string().required().min(1).max(63).label("WiFi Password"),
+    team: Yup.object().required().label("Team"),
+});
 
 function UserInputScreen() {
     const handleSubmit = ( userData, { resetForm }) => {
@@ -18,10 +25,11 @@ function UserInputScreen() {
                 initialValues={{
                     ssid: "",
                     password: "",
-                    team: "",
+                    team: null,
                     delay: 30,
                 }}
                 onSubmit={handleSubmit}
+                validationSchema={validationSchema}
             >
                 <AppFormField
                     autoCapitalize="none"
