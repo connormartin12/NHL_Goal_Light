@@ -54,8 +54,7 @@ function UserInputScreen() {
                     placeholder="Choose a Team"
                     width="100%"
                 />
-                <AppFormSlider 
-                    initialValue={30}
+                <AppFormSlider
                     minimumTrackTintColor='black'
                     minimumValue={0}
                     maximumValue={60}

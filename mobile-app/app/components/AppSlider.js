@@ -4,20 +4,17 @@ import Slider from '@react-native-community/slider';
 
 import AppText from './AppText';
 
-function AppSlider({ onSlidingComplete, initialValue, minimumValue, maximumValue, step, valuePrefix, valueSuffix, width="100%", ...otherProps }) {
-    const [sliderValue, setSliderValue] = useState(initialValue);
-
+function AppSlider({  minimumValue, maximumValue, onValueChange, selectedValue, step, valuePrefix, valueSuffix, width="100%", ...otherProps }) {
     return (
         <View style={styles.container}>
-            <AppText style={styles.text}>{valuePrefix} {sliderValue} {valueSuffix}</AppText>
+            <AppText style={styles.text}>{valuePrefix} {selectedValue} {valueSuffix}</AppText>
             <Slider
                 minimumValue={minimumValue}
                 maximumValue={maximumValue}
-                onValueChange={(value) => setSliderValue(value)}
-                onSlidingComplete={onSlidingComplete}
+                onValueChange={onValueChange}
                 step={step}
                 style={[styles.slider,  { width }]}
-                value={sliderValue}
+                value={selectedValue}
                 {...otherProps}
             />
         </View>    

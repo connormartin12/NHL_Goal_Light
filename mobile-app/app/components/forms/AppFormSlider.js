@@ -3,15 +3,15 @@ import { useFormikContext } from 'formik';
 
 import AppSlider from '../AppSlider';
 
-function AppFormSlider({ initialValue, minimumValue, maximumValue, name, step, valuePrefix, valueSuffix, width, ...otherProps }) {
-    const { setFieldValue } = useFormikContext();
+function AppFormSlider({ initialValue, minimumValue, maximumValue, name, onValueChange, step, valuePrefix, valueSuffix, width, ...otherProps }) {
+    const { setFieldValue, values,  } = useFormikContext();
 
     return (
         <AppSlider
-            initialValue={initialValue}
             minimumValue={minimumValue}
             maximumValue={maximumValue}
-            onSlidingComplete={(value) => setFieldValue(name, value)}
+            onValueChange={(value) => setFieldValue(name, value)}
+            selectedValue={values[name]}
             step={step}
             valuePrefix={valuePrefix}
             valueSuffix={valueSuffix}
