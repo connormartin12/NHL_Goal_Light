@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import textStyles from '../config/textStyles';
+import { textStyles } from '../config';
 
 function AppText({ children, style, ...otherProps }) {
     return (

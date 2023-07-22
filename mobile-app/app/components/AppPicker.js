@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableWithoutFeedback, Button, Modal, FlatList } f
 import { MaterialCommunityIcons } from  '@expo/vector-icons';
 
 import AppText from './AppText';
-import colors from '../config/colors';
+import { colors } from '../config';
 import Screen from './Screen';
 import TeamPickerComponent from './TeamPickerComponent';
 

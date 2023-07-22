@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 
-import textStyles from '../config/textStyles';
-import colors from '../config/colors';
+import { colors, textStyles } from '../config';
 
 function AppTextInput({ width="100%", ...otherProps }) {
     return (

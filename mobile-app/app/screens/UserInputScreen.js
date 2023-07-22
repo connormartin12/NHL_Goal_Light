@@ -3,10 +3,9 @@ import { StyleSheet } from 'react-native';
 import * as Yup from 'yup';
 
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
-import colors from '../config/colors';
+import { colors, teams } from '../config';
 import Screen from '../components/Screen';
 import TeamPickerComponent from '../components/TeamPickerComponent';
-import teams from '../config/teams';
 
 let validationSchema = Yup.object({
     ssid: Yup.string().required().min(1).max(32).label("WiFi SSID"),
