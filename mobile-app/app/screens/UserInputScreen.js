@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import * as Yup from 'yup';
 
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
+import colors from '../config/colors';
 import Screen from '../components/Screen';
 import TeamPickerComponent from '../components/TeamPickerComponent';
 import teams from '../config/teams';
@@ -55,7 +56,7 @@ function UserInputScreen() {
                     width="100%"
                 />
                 <AppFormSlider
-                    minimumTrackTintColor='black'
+                    minimumTrackTintColor={colors.primary}
                     minimumValue={0}
                     maximumValue={60}
                     name="delay"

@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableWithoutFeedback, Button, Modal, FlatList } f
 import { MaterialCommunityIcons } from  '@expo/vector-icons';
 
 import AppText from './AppText';
+import colors from '../config/colors';
 import Screen from './Screen';
 import TeamPickerComponent from './TeamPickerComponent';
 
@@ -19,7 +20,7 @@ function AppPicker({ items, numberOfColumns=1, onSelectItem, PickerItemComponent
                         name="chevron-down" 
                         size={25}
                         style={styles.icon} 
-                        color="#636969" 
+                        color="#636969"
                         />
                 </View>
             </TouchableWithoutFeedback>
@@ -44,7 +45,7 @@ function AppPicker({ items, numberOfColumns=1, onSelectItem, PickerItemComponent
                                         onSelectItem(item);
                                     }}
                                 />
-                            )}
+                             )}
                         />
                 </Screen>
             </Modal>
@@ -55,8 +56,8 @@ function AppPicker({ items, numberOfColumns=1, onSelectItem, PickerItemComponent
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: '#F5F5F5',
-        borderColor: '#a9a9a9',
+        backgroundColor: colors.inputBackground,
+        borderColor: colors.inputBorder,
         borderWidth: 1,
         borderRadius: 25,
         flexDirection: "row",
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     placeholder: {
-        color: "#C0C0C0",
+        color: colors.placeholder,
     },
     separator: {
         backgroundColor: '#DEDEDE',
