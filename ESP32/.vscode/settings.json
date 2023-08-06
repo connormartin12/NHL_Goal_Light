@@ -1,43 +1,18 @@
 {
-    "json.schemaDownload.enable": true,
     "C_Cpp.intelliSenseEngine": "Tag Parser",
     "idf.adapterTargetName": "esp32",
-    "idf.customExtraPaths": "C:\\Users\\death\\.espressif\\tools\\xtensa-esp-elf-gdb\\11.2_20220823\\xtensa-esp-elf-gdb\\bin;C:\\Users\\death\\.espressif\\tools\\riscv32-esp-elf-gdb\\11.2_20220823\\riscv32-esp-elf-gdb\\bin;C:\\Users\\death\\.espressif\\tools\\xtensa-esp32-elf\\esp-2022r1-11.2.0\\xtensa-esp32-elf\\bin;C:\\Users\\death\\.espressif\\tools\\xtensa-esp32s2-elf\\esp-2022r1-11.2.0\\xtensa-esp32s2-elf\\bin;C:\\Users\\death\\.espressif\\tools\\xtensa-esp32s3-elf\\esp-2022r1-11.2.0\\xtensa-esp32s3-elf\\bin;C:\\Users\\death\\.espressif\\tools\\riscv32-esp-elf\\esp-2022r1-11.2.0\\riscv32-esp-elf\\bin;C:\\Users\\death\\.espressif\\tools\\esp32ulp-elf\\2.35_20220830\\esp32ulp-elf\\bin;C:\\Users\\death\\.espressif\\tools\\cmake\\3.24.0\\bin;C:\\Users\\death\\.espressif\\tools\\openocd-esp32\\v0.11.0-esp32-20221026\\openocd-esp32\\bin;C:\\Users\\death\\.espressif\\tools\\ninja\\1.10.2;C:\\Users\\death\\.espressif\\tools\\idf-exe\\1.0.3;C:\\Users\\death\\.espressif\\tools\\ccache\\4.6.2\\ccache-4.6.2-windows-x86_64;C:\\Users\\death\\.espressif\\tools\\dfu-util\\0.9\\dfu-util-0.9-win64;C:\\Users\\death\\.espressif\\tools\\esp-rom-elfs\\20220823",
+    "idf.customExtraPaths": "/Users/connormartin/esp/esp-idf/tools/tools/xtensa-esp-elf-gdb/12.1_20221002/xtensa-esp-elf-gdb/bin:/Users/connormartin/esp/esp-idf/tools/tools/riscv32-esp-elf-gdb/12.1_20221002/riscv32-esp-elf-gdb/bin:/Users/connormartin/esp/esp-idf/tools/tools/xtensa-esp32-elf/esp-12.2.0_20230208/xtensa-esp32-elf/bin:/Users/connormartin/esp/esp-idf/tools/tools/xtensa-esp32s2-elf/esp-12.2.0_20230208/xtensa-esp32s2-elf/bin:/Users/connormartin/esp/esp-idf/tools/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin:/Users/connormartin/esp/esp-idf/tools/tools/riscv32-esp-elf/esp-12.2.0_20230208/riscv32-esp-elf/bin:/Users/connormartin/esp/esp-idf/tools/tools/esp32ulp-elf/2.35_20220830/esp32ulp-elf/bin:/Users/connormartin/esp/esp-idf/tools/tools/openocd-esp32/v0.12.0-esp32-20230419/openocd-esp32/bin:/Users/connormartin/esp/esp-idf/tools/tools/esp-rom-elfs/20230320",
     "idf.customExtraVars": {
-        "OPENOCD_SCRIPTS": "C:\\Users\\death\\.espressif\\tools\\openocd-esp32\\v0.11.0-esp32-20221026/openocd-esp32/share/openocd/scripts",
-        "IDF_CCACHE_ENABLE": "1",
-        "ESP_ROM_ELF_DIR": "C:\\Users\\death\\.espressif\\tools\\esp-rom-elfs\\20220823/"
+        "OPENOCD_SCRIPTS": "/Users/connormartin/esp/esp-idf/tools/tools/openocd-esp32/v0.12.0-esp32-20230419/openocd-esp32/share/openocd/scripts",
+        "ESP_ROM_ELF_DIR": "/Users/connormartin/esp/esp-idf/tools/tools/esp-rom-elfs/20230320/"
     },
-    "idf.espIdfPathWin": "C:\\Users\\death\\esp\\esp-idf",
+    "idf.espIdfPath": "/Users/connormartin/esp/esp-idf",
     "idf.openOcdConfigs": [
         "interface/ftdi/esp32_devkitj_v1.cfg",
         "target/esp32.cfg"
     ],
-    "idf.portWin": "COM3",
-    "idf.pythonBinPathWin": "C:\\Users\\death\\.espressif\\python_env\\idf5.0_py3.8_env\\Scripts\\python.exe",
-    "idf.toolsPathWin": "C:\\Users\\death\\.espressif",
-    "idf.flashType": "UART",
-    "files.associations": {
-        "esp_wifi.h": "c",
-        "freertos.h": "c",
-        "task.h": "c",
-        "esp_https_ota.h": "c",
-        "esp_ota_ops.h": "c",
-        "wifi.h": "c",
-        "nvs.h": "c",
-        "functional": "c",
-        "nvs_storage.h": "c",
-        "esp_err.h": "c",
-        "ble.h": "c",
-        "my_ble.h": "c",
-        "ble_svc_gap.h": "c",
-        "nimble_port.h": "c",
-        "nvs_flash.h": "c",
-        "semphr.h": "c",
-        "bluetooth.h": "c",
-        "stdio.h": "c",
-        "nimble_port_freertos.h": "c",
-        "esp_log.h": "c",
-        "ble_svc_gatt.h": "c"
-    }
+    "idf.port": "/dev/cu.usbserial-0001",
+    "idf.pythonBinPath": "/Users/connormartin/esp/esp-idf/tools/python_env/idf5.2_py3.11_env/bin/python",
+    "idf.toolsPath": "/Users/connormartin/esp/esp-idf/tools",
+    "idf.flashType": "UART"
 }

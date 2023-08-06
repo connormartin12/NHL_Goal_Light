@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^4.4.2",
+    "eas-cli": "^3.17.1",
     "expo": "~49.0.3",
     "expo-constants": "~14.4.2",
     "expo-status-bar": "~1.6.0",
