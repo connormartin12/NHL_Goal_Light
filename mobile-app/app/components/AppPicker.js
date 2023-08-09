@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         color: colors.placeholder,
     },
     separator: {
-        backgroundColor: '#DEDEDE',
+        backgroundColor: colors.itemSeparator,
         height: 1,
         marginLeft: '2.5%',
         marginRight: '2.5%',

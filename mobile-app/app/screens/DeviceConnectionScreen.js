@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import colors from '../config/colors';
 import DeviceModal from '../components/DeviceConnectionModal';
 import useBLE from '../hooks/useBLE.js';
 
@@ -35,9 +37,7 @@ function DeviceConnectionScreen() {
     <SafeAreaView style={styles.container}>
         <View style={styles.connectionRequest}>
         { connectedDevice ? (
-            <>
                 <Text style={styles.connectionTitleText}>Connected!</Text>
-            </>
         ) : (
             <Text style={styles.connectionTitleText}>Connect to a Device</Text>)
         }
@@ -72,14 +72,14 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
       textAlign: "center",
       marginHorizontal: 20,
-      color: "black",
+      color: colors.primary,
     },
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: colors.inputBackground,
     },
     ctaButton: {
-      backgroundColor: "#FF6060",
+      backgroundColor: colors.primary,
       justifyContent: "center",
       alignItems: "center",
       height: 50,
@@ -88,9 +88,9 @@ const styles = StyleSheet.create({
       borderRadius: 8,
     },
     ctaButtonText: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: "bold",
-      color: "white",
+      color: colors.secondary,
     },
   });
 

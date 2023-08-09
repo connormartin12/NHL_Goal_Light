@@ -6,7 +6,6 @@ import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } fro
 import { colors, teams } from '../config';
 import Screen from '../components/Screen';
 import TeamPickerComponent from '../components/TeamPickerComponent';
-import useBLE from '../hooks/useBLE';
 
 let validationSchema = Yup.object({
     ssid: Yup.string().required().min(1).max(32).label("WiFi SSID"),
