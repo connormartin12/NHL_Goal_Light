@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -13,7 +14,8 @@
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
 
-User_Info userInfo;  
+User_Info userInfo;
+char *defaultDelay = "30";
 
 void request_user_info()
 {
@@ -32,7 +34,8 @@ void app_main(void)
     {
         case ESP_ERR_NVS_NOT_FOUND:
             ESP_LOGE(NVS_TAG, "User info not set yet");
-            request_user_info();
+            memcpy(userInfo.delay, defaultDelay, sizeof(&defaultDelay));
+           request_user_info();
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);

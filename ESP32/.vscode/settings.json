@@ -17,6 +17,8 @@
     "idf.flashType": "UART",
     "files.associations": {
         "regex": "c",
-        "compare": "c"
+        "compare": "c",
+        "complex": "c",
+        "functional": "c"
     }
 }
