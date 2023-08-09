@@ -9,6 +9,8 @@ typedef struct user_info_struct
 {
     char wifi_ssid[33];
     char wifi_password[64];
+    char team[22];
+    char delay[4];
 } User_Info;
 
 esp_err_t get_stored_info(User_Info *userSettings);

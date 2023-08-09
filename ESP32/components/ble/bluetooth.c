@@ -13,13 +13,18 @@
 
 #define TAG "BLE"
 #define DEVICE_NAME "ESP32"
+
 #define DEVICE_SERVICE 0xFFFF
-#define SSID_WRITE     0xFF01
-#define PASSWORD_WRITE 0xFF02
+#define SSID_CHR       0xFF01
+#define PASSWORD_CHR   0xFF02
+#define TEAM_CHR       0xFF03
+#define DELAY_CHR      0xFF04
 
 EventGroupHandle_t eventGroup;
 #define SSID_BIT     BIT2
 #define PASSWORD_BIT BIT3
+#define TEAM_BIT     BIT4
+#define DELAY_BIT    BIT5
 
 User_Info *info_buffer;
 
@@ -27,21 +32,87 @@ uint8_t ble_addr_type;
 
 void ble_app_advertise(void);
 
-static int user_ssid_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int user_ssid_readWrite(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) 
 {
-    memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
-    info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
-    printf("Incoming message: %s\n", info_buffer->wifi_ssid);
-    xEventGroupSetBits(eventGroup, SSID_BIT);
+    switch(ctxt->op) {
+        case BLE_GATT_ACCESS_OP_READ_CHR:
+            os_mbuf_append(ctxt->om, info_buffer->wifi_ssid, sizeof(info_buffer->wifi_ssid));
+            return 0;
+
+        case BLE_GATT_ACCESS_OP_WRITE_CHR:
+            memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
+            info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
+            printf("Incoming message: %s\n", info_buffer->wifi_ssid);
+            xEventGroupSetBits(eventGroup, SSID_BIT);
+            return 0;
+
+        default:
+            ESP_LOGE(TAG, "user_ssid_readWrite Failed!");
+    }
+
     return 0;
 }
 
-static int user_password_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int user_password_readWrite(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
-    info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
-    printf("Incoming message: %s\n", info_buffer->wifi_password);
-    xEventGroupSetBits(eventGroup, PASSWORD_BIT);
+    switch(ctxt->op) {
+        case BLE_GATT_ACCESS_OP_READ_CHR:
+            os_mbuf_append(ctxt->om, info_buffer->wifi_password, sizeof(info_buffer->wifi_password));
+            return 0;
+
+        case BLE_GATT_ACCESS_OP_WRITE_CHR:
+            memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
+            info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
+            printf("Incoming message: %s\n", info_buffer->wifi_password);
+            xEventGroupSetBits(eventGroup, PASSWORD_BIT);
+            return 0;
+
+        default:
+            ESP_LOGE(TAG, "user_password_readWrite Failed!");
+    }
+
+    return 0;
+}
+
+static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    switch(ctxt->op) {
+        case BLE_GATT_ACCESS_OP_READ_CHR:
+            os_mbuf_append(ctxt->om, info_buffer->team, sizeof(info_buffer->team));
+            return 0;
+
+        case BLE_GATT_ACCESS_OP_WRITE_CHR:
+            memcpy(info_buffer->team, ctxt->om->om_data, ctxt->om->om_len);
+            info_buffer->team[ctxt->om->om_len] = '\x0';
+            printf("Incoming message: %s\n", info_buffer->team);
+            xEventGroupSetBits(eventGroup, TEAM_BIT);
+            return 0;
+
+        default:
+            ESP_LOGE(TAG, "user_team_readWrite Failed!");
+    }
+
+    return 0;
+}
+
+static int user_delay_readWrite(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    switch(ctxt->op) {
+        case BLE_GATT_ACCESS_OP_READ_CHR:
+            os_mbuf_append(ctxt->om, info_buffer->delay, sizeof(info_buffer->delay));
+            return 0;
+
+        case BLE_GATT_ACCESS_OP_WRITE_CHR:
+            memcpy(info_buffer->delay, ctxt->om->om_data, ctxt->om->om_len);
+            info_buffer->delay[ctxt->om->om_len] = '\x0';
+            printf("Incoming message: %s\n", info_buffer->delay);
+            xEventGroupSetBits(eventGroup, DELAY_BIT);
+            return 0;
+
+        default:
+            ESP_LOGE(TAG, "user_delay_readWrite Failed!");
+    }
+
     return 0;
 }
 
@@ -52,15 +123,26 @@ static const struct ble_gatt_svc_def gatt_svcs[] = {
         .characteristics = (struct ble_gatt_chr_def[])
         {
             {
-                .uuid = BLE_UUID16_DECLARE(SSID_WRITE), // Longest write is about 222 bytes
-                .flags = BLE_GATT_CHR_F_WRITE,
-                .access_cb = user_ssid_write
+                .uuid = BLE_UUID16_DECLARE(SSID_CHR),
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_ssid_readWrite
             },
             {
-                .uuid = BLE_UUID16_DECLARE(PASSWORD_WRITE), // Longest write is about 222 bytes
-                .flags = BLE_GATT_CHR_F_WRITE,
-                .access_cb = user_password_write
-            }, {0}
+                .uuid = BLE_UUID16_DECLARE(PASSWORD_CHR),
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_password_readWrite
+            }, 
+            {
+                .uuid = BLE_UUID16_DECLARE(TEAM_CHR),
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_team_readWrite
+            },
+            {
+                .uuid = BLE_UUID16_DECLARE(DELAY_CHR),
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_delay_readWrite
+            },
+            {0}
         }
     }, {0}
 };
@@ -154,7 +236,7 @@ void stop_ble()
 esp_err_t all_values_set()
 {
     eventGroup = xEventGroupCreate();
-    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT | PASSWORD_BIT, true, true, portMAX_DELAY);
+    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT | PASSWORD_BIT | TEAM_BIT | DELAY_BIT, true, true, portMAX_DELAY);
     if (bits)
         return ESP_OK;
     else {
