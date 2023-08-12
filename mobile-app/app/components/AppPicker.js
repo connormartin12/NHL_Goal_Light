@@ -29,24 +29,24 @@ function AppPicker({ items, numberOfColumns=1, onSelectItem, PickerItemComponent
                 animationType="slide">
                 <Screen style={styles.modalView}>
                     <Button title="Close" onPress={() => setModalVisible(false)} />
-                        <FlatList
-                            ItemSeparatorComponent={
+                    <FlatList
+                        ItemSeparatorComponent={
                             <View style={styles.separator} />
-                            } 
-                            data={items}
-                            keyExtractor={item => item.id}
-                            numColumns={numberOfColumns}
-                            renderItem={({ item }) => (
-                                <PickerItemComponent 
-                                    item={item}
-                                    name={item.name}
-                                    onPress={() => {
-                                        setModalVisible(false);
-                                        onSelectItem(item);
-                                    }}
-                                />
-                             )}
-                        />
+                        } 
+                        data={items}
+                        keyExtractor={item => item.id}
+                        numColumns={numberOfColumns}
+                        renderItem={({ item }) => (
+                            <PickerItemComponent 
+                                item={item}
+                                name={item.name}
+                                onPress={() => {
+                                    setModalVisible(false);
+                                    onSelectItem(item);
+                                }}
+                            />
+                        )}
+                    />
                 </Screen>
             </Modal>
         </>

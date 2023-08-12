@@ -5,7 +5,7 @@ import colors from '../config/colors';
 import DeviceModal from '../components/DeviceConnectionModal';
 import useBLE from '../hooks/useBLE.js';
 
-function DeviceConnectionScreen() {
+function HomeScreen({ navigation }) {
     const {
         allDevices,
         connectedDevice,
@@ -94,4 +94,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default DeviceConnectionScreen;
+export default HomeScreen;
