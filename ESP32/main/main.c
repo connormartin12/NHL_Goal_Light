@@ -21,21 +21,23 @@ void request_user_info()
 {
     run_ble(&userInfo);
     esp_err_t err = all_values_set();
-    if (err)
+    if (err) {
         ESP_ERROR_CHECK(all_values_set());
+    }
     stop_ble();
     store_user_info(&userInfo);
 }
 
 void app_main(void)
 {
+    // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     esp_err_t result = get_stored_info(&userInfo);
     switch (result)
     {
         case ESP_ERR_NVS_NOT_FOUND:
             ESP_LOGE(NVS_TAG, "User info not set yet");
             memcpy(userInfo.delay, defaultDelay, sizeof(&defaultDelay));
-           request_user_info();
+            request_user_info();
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);
@@ -53,7 +55,10 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(retry);
 
-    wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
+    // If ESP32 cannot connect to the wifi, it will keep returning to ble mode to request correct wifi credentials from the user.
+    while (wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password) != ESP_OK) {
+        request_user_info();
+    }
 
     esp_err_t err = run_ota();
     if (err) 

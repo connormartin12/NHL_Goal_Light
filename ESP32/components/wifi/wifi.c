@@ -19,7 +19,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (retry_connect < 5) {
+        if (retry_connect < 3) {
             esp_wifi_connect();
             retry_connect++;
             ESP_LOGI(TAG, "Retry to connect to the AP");
@@ -35,7 +35,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
-void wifi_connect_sta(const char *ssid, const char *pass)
+esp_err_t wifi_connect_sta(const char *ssid, const char *pass)
 {
         wifi_event_group = xEventGroupCreate();
 
@@ -61,12 +61,18 @@ void wifi_connect_sta(const char *ssid, const char *pass)
         ESP_ERROR_CHECK(esp_wifi_start()); 
 
         EventBits_t bits = xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
-        if (bits & WIFI_CONNECTED_BIT)
+        if (bits & WIFI_CONNECTED_BIT) {
             ESP_LOGI(TAG, "Connected to AP SSID: %s, Password: %s", ssid, pass);
-        else if (bits & WIFI_FAIL_BIT)
+            return ESP_OK;
+        }
+        else if (bits & WIFI_FAIL_BIT) {
             ESP_LOGI(TAG, "Failed to connect to SSID: %s, Password: %s", ssid, pass);
-        else
+            return ESP_FAIL;
+        }
+        else {
             ESP_LOGE(TAG, "UNEXPECTED EVENT");
+            return ESP_FAIL;
+        }
 }
 
 void wifi_disconnect(void)
