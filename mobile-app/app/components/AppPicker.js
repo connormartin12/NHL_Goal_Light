@@ -7,12 +7,12 @@ import { colors } from '../config';
 import Screen from './Screen';
 import TeamPickerComponent from './TeamPickerComponent';
 
-function AppPicker({ items, numberOfColumns=1, onSelectItem, PickerItemComponent=TeamPickerComponent, placeholder, selectedItem, width="100%" }) {
+function AppPicker({ disabled, items, numberOfColumns=1, onSelectItem, PickerItemComponent=TeamPickerComponent, placeholder, selectedItem, width="100%" }) {
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <>
-            <TouchableWithoutFeedback onPress={() => setModalVisible(true)} >
+            <TouchableWithoutFeedback disabled={disabled} onPress={() => setModalVisible(true)} >
                 <View style={[styles.container, { width }]}>
                     { selectedItem ? (<AppText style={styles.text}>{selectedItem.name}</AppText>) : (<AppText style={styles.placeholder}>{placeholder}</AppText>) }
 

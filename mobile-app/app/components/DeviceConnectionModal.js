@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
-import { FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Button, FlatList, Modal, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import colors from '../config/colors';
+import Screen from './Screen';
 
 const DeviceModalListItem = (props) => {
-    const { item, connectToPeripheral, closeModal } = props;
+    const { closeModal, connectToPeripheral, item } = props;
 
     const connectAndCloseModal = useCallback(() => {
         connectToPeripheral(item.item);
@@ -19,14 +20,14 @@ const DeviceModalListItem = (props) => {
 };
 
 const DeviceModal = (props) => {
-    const { devices, visible, connectToPeripheral, closeModal } = props;
+    const { closeModal, connectToPeripheral, devices, visible } = props;
 
     const renderDeviceModalListItem = useCallback((item) => {
         return (
             <DeviceModalListItem 
-                item={item} 
-                connectToPeripheral={connectToPeripheral} 
                 closeModal={closeModal}
+                connectToPeripheral={connectToPeripheral} 
+                item={item} 
             />
         );
     }, [closeModal, connectToPeripheral]
@@ -34,17 +35,18 @@ const DeviceModal = (props) => {
 
     return (
         <Modal 
-            style={modalStyle.modalContainer} 
             animationType="slide" 
+            style={modalStyle.modalContainer} 
             transparent={false} 
             visible={visible}
         >
-            <SafeAreaView style={modalStyle.modalTitle}>
+            <Screen style={modalStyle.modalTitle}>
+                <Button title="Close" onPress={closeModal} />
                 <Text style={modalStyle.modalTitleText}>
                     Tap on a device to connect
                 </Text>
                 <FlatList contentContainerStyle={modalStyle.modalFlatlistContiner} data={devices} renderItem={renderDeviceModalListItem}/>
-            </SafeAreaView>
+            </Screen>
         </Modal>
     );
 };
