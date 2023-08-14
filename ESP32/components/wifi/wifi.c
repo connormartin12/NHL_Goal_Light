@@ -14,6 +14,8 @@ static EventGroupHandle_t wifi_event_group;
 
 static int retry_connect = 0;
 
+esp_netif_t *my_netif;
+
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
@@ -24,6 +26,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
             retry_connect++;
             ESP_LOGI(TAG, "Retry to connect to the AP");
         } else {
+            retry_connect = 0;
             xEventGroupSetBits(wifi_event_group, WIFI_FAIL_BIT);
         }
         ESP_LOGI(TAG,"Connect to the AP fail");
@@ -35,20 +38,25 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
+void wifi_init(void) {
+    ESP_ERROR_CHECK(esp_netif_init());
+
+    // Error here. event loop has already been created. Can't complete more than once.
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&wifi_init_config));
+
+    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
+}
+
 esp_err_t wifi_connect_sta(const char *ssid, const char *pass)
 {
         wifi_event_group = xEventGroupCreate();
 
-        ESP_ERROR_CHECK(esp_netif_init());
-
-        ESP_ERROR_CHECK(esp_event_loop_create_default());
-        esp_netif_create_default_wifi_sta();
-
-        wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
-        ESP_ERROR_CHECK(esp_wifi_init(&wifi_init_config));
-
-        ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
-        ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
+        
+        my_netif = esp_netif_create_default_wifi_sta();
 
         wifi_config_t wifi_config;
         memset(&wifi_config, 0, sizeof(wifi_config_t));
@@ -77,6 +85,7 @@ esp_err_t wifi_connect_sta(const char *ssid, const char *pass)
 
 void wifi_disconnect(void)
 {
+    esp_netif_destroy(my_netif);
     ESP_ERROR_CHECK(esp_wifi_disconnect());
     ESP_ERROR_CHECK(esp_wifi_stop());
 }

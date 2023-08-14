@@ -55,9 +55,14 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(retry);
 
-    // If ESP32 cannot connect to the wifi, it will keep returning to ble mode to request correct wifi credentials from the user.
-    while (wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password) != ESP_OK) {
+    wifi_init();
+
+    // If ESP32 cannot connect to the wifi, it should keep returning to ble mode to request correct wifi credentials from the user.
+    retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
+    while (retry != ESP_OK) {
+        wifi_disconnect();
         request_user_info();
+        retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
     }
 
     esp_err_t err = run_ota();
