@@ -4,11 +4,11 @@ import { useFormikContext } from 'formik';
 import AppButton from '../AppButton';
 import { colors } from '../../config';
 
-function SubmitButton({ title, ...otherprops }) {
+function SubmitButton({ title, width, ...otherprops }) {
     const { handleSubmit } = useFormikContext();
 
     return (
-        <AppButton color={colors.primary} title={title} onPress={handleSubmit} {...otherprops}></AppButton>
+        <AppButton color={colors.primary} title={title} onPress={handleSubmit} width={width} {...otherprops}></AppButton>
     );
 }
 

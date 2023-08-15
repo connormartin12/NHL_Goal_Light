@@ -3,9 +3,9 @@ import { View, StyleSheet, TextInput } from 'react-native';
 
 import { colors, textStyles } from '../config';
 
-function AppTextInput({ width="100%", ...otherProps }) {
+function AppTextInput({ width="100%", marginTop=10, ...otherProps }) {
     return (
-        <View style={[styles.container, { width }]}>
+        <View style={[styles.container, { width, marginTop }]}>
             <TextInput 
                 placeholderTextColor={colors.placeholder}
                 style={textStyles.default}
