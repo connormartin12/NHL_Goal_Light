@@ -10,7 +10,6 @@ import useBLE from '../hooks/useBLE';
 
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import cache from '../utilitiy/cache';
 import DeviceModal from '../components/DeviceConnectionModal';
 
 let validationSchema = Yup.object({
@@ -19,20 +18,24 @@ let validationSchema = Yup.object({
     team: Yup.object().required().label("Team"),
 });
 
+const inputFieldWidth = 300;
+
 function UserInputScreen( {navigation} ) {
     const {
         allDevices,
         connectedDevice,
         connectToDevice,
         disconnectFromDevice,
+        espDelay,
+        espPassword,
+        espSSID,
+        espTeam,
         requestPermissions,
         scanForPeripherals,
         writeData,
     } = useBLE();
 
     const [modalVisible, setModalVisible] = useState(false);
-
-    const [cachedData, setCachedData] = useState([]);
 
     const scanForDevices = async () => {
         const isPermissionsEnabled = await requestPermissions();
@@ -50,18 +53,7 @@ function UserInputScreen( {navigation} ) {
         setModalVisible(true);
     };
 
-    const retrieveData = async () => {
-        try {
-            const data = await cache.getData();
-            setCachedData(data);
-            return data;
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
-        retrieveData();
         openModal();
     }, []);
 
@@ -72,7 +64,6 @@ function UserInputScreen( {navigation} ) {
         }
 
         writeData(ssid=userData.ssid, password=userData.password, teamSelection=userData.team.name, delay=userData.delay);
-        cache.storeData(userData);
         console.log(userData);
         resetForm();
     };
@@ -93,11 +84,12 @@ function UserInputScreen( {navigation} ) {
             />
 
             <AppForm 
+                enableReinitialize={true}
                 initialValues={{
-                    ssid: "",
-                    password: "",
-                    team: null,
-                    delay: 30,
+                    ssid: [espSSID.length > 0 ? espSSID : ""],
+                    password: [espPassword.length > 0 ? espPassword : ""],
+                    team: espTeam,
+                    delay: espDelay,
                 }}
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
@@ -109,7 +101,7 @@ function UserInputScreen( {navigation} ) {
                     name="ssid"
                     placeholder="WiFi SSID" 
                     readOnly={connectedDevice? false : true}
-                    width={300}
+                    width={inputFieldWidth}
                 />
                 <AppFormField
                     autoCapitalize="none"
@@ -118,7 +110,7 @@ function UserInputScreen( {navigation} ) {
                     placeholder="WiFi Password" 
                     readOnly={connectedDevice? false : true}
                     secureTextEntry={true} 
-                    width={300}
+                    width={inputFieldWidth}
                 />
                 <AppFormPicker 
                     disabled={connectedDevice? false : true}
@@ -127,7 +119,7 @@ function UserInputScreen( {navigation} ) {
                     numberOfColumns={1}
                     PickerItemComponent={TeamPickerComponent}
                     placeholder="Choose a Team"
-                    width={300}
+                    width={inputFieldWidth}
                 />
                 <AppFormSlider
                     disabled={connectedDevice? false : true}
@@ -138,9 +130,9 @@ function UserInputScreen( {navigation} ) {
                     step={1}
                     valuePrefix="Goal Light Delay:"
                     valueSuffix="Seconds"
-                    width={300}
+                    width={inputFieldWidth}
                 />
-                <SubmitButton title="Submit" width={300} disabled={connectedDevice? false : true} />
+                <SubmitButton title="Submit" width={inputFieldWidth} disabled={connectedDevice? false : true} />
             </AppForm>
         </Screen>
     );
@@ -160,7 +152,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 0,
         padding: 15,
-        width: 300,
+        width: inputFieldWidth,
     },
     connectionWarning: {
         color: "red",

@@ -13,6 +13,11 @@ function useBLE() {
 
     const [allDevices, setAllDevices] = useState([]);
     const [connectedDevice, setConnectedDevice] = useState(null);
+
+    const [espSSID, setEspSSID] = useState("");
+    const [espPassword, setEspPassword] = useState("");
+    const [espTeam, setEspTeam] = useState(null);
+    const [espDelay, setEspDelay] = useState(30);
     
     const requestPermissions = async () => {
         // Add code here for android permissions
@@ -45,38 +50,40 @@ function useBLE() {
             setConnectedDevice(deviceConnection);
             await deviceConnection.discoverAllServicesAndCharacteristics();
             bleManager.stopDeviceScan();
-            // readData(deviceConnection);
+            readData(deviceConnection);
         } catch (error) {
             console.log("Error Connecting", error);
         }
     };
 
-    // const readData = async (device) => {
-    //     if (device) {
-    //         device.readCharacteristicForService(ESP32_UUID, ESP32_SSID)
-    //             .then((characteristic) => {
-    //                 const decodedValue = base64.decode(characteristic.value);
-    //                 console.log(decodedValue);
-    //             })
-    //         device.readCharacteristicForService(ESP32_UUID, ESP32_PASSWORD)
-    //             .then((characteristic) => {
-    //                 const decodedValue = base64.decode(characteristic.value);
-    //                 console.log(decodedValue);
-    //             })
-    //         device.readCharacteristicForService(ESP32_UUID, ESP32_TEAM)
-    //             .then((characteristic) => {
-    //                 const decodedValue = base64.decode(characteristic.value);
-    //                 console.log(decodedValue);
-    //             })
-    //         device.readCharacteristicForService(ESP32_UUID, ESP32_DELAY)
-    //             .then((characteristic) => {
-    //                 const decodedValue = base64.decode(characteristic.value);
-    //                 console.log(decodedValue);
-    //             })
-    //     } else {
-    //         console.log("No device connected");
-    //     }
-    // };
+    const readData = async (device) => {
+        if (device) {
+            device.readCharacteristicForService(ESP32_UUID, ESP32_SSID)
+                .then((characteristic) => {
+                    const decodedValue = base64.decode(characteristic.value);
+                    if (decodedValue.length > 0) {
+                        setEspSSID(decodedValue);
+                    }
+                })
+            device.readCharacteristicForService(ESP32_UUID, ESP32_PASSWORD)
+                .then((characteristic) => {
+                    const decodedValue = base64.decode(characteristic.value);
+                    setEspPassword(decodedValue)
+                })
+            device.readCharacteristicForService(ESP32_UUID, ESP32_TEAM)
+                .then((characteristic) => {
+                    const decodedValue = base64.decode(characteristic.value);
+                    // setEspTeam(decodedValue);
+                })
+            device.readCharacteristicForService(ESP32_UUID, ESP32_DELAY)
+                .then((characteristic) => {
+                    const decodedValue = base64.decode(characteristic.value);
+                    setEspDelay(parseInt(decodedValue));
+                })
+        } else {
+            console.log("No device connected");
+        }
+    };
 
     const writeData = async ( ssid, password, teamSelection, delay ) => {
         const SSID = base64.encode(ssid);
@@ -118,6 +125,10 @@ function useBLE() {
         connectedDevice,
         connectToDevice,
         disconnectFromDevice,
+        espDelay,
+        espPassword,
+        espSSID,
+        espTeam,
         requestPermissions,
         scanForPeripherals,
         writeData,

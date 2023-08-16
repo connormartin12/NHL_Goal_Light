@@ -1,9 +1,10 @@
 import React from 'react';
 import { Formik } from 'formik';
 
-function AppForm({ initialValues, onSubmit, children, validationSchema }) {
+function AppForm({ enableReinitialize, initialValues, onSubmit, children, validationSchema }) {
     return (
         <Formik
+            enableReinitialize={enableReinitialize}
             initialValues={initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
