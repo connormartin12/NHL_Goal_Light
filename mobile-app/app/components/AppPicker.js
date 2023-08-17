@@ -20,7 +20,7 @@ function AppPicker({ disabled, items, numberOfColumns=1, onSelectItem, PickerIte
                         name="chevron-down" 
                         size={25}
                         style={styles.icon} 
-                        color="#636969"
+                        color={colors.icon}
                         />
                 </View>
             </TouchableWithoutFeedback>

@@ -36,6 +36,7 @@ function UserInputScreen( {navigation} ) {
     } = useBLE();
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(true);
 
     const scanForDevices = async () => {
         const isPermissionsEnabled = await requestPermissions();
@@ -64,7 +65,6 @@ function UserInputScreen( {navigation} ) {
         }
 
         writeData(ssid=userData.ssid, password=userData.password, teamSelection=userData.team, delay=userData.delay);
-        console.log(userData);
         resetForm();
     };
 
@@ -107,9 +107,11 @@ function UserInputScreen( {navigation} ) {
                     autoCapitalize="none"
                     autoCorrect={false}
                     name="password"
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                    passwordField={true}
                     placeholder="WiFi Password" 
                     readOnly={connectedDevice? false : true}
-                    secureTextEntry={true} 
+                    secureTextEntry={passwordVisible} 
                     width={inputFieldWidth}
                 />
                 <AppFormPicker 

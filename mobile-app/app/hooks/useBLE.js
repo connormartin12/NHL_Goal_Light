@@ -126,6 +126,10 @@ function useBLE() {
         if (connectedDevice) {
             bleManager.cancelDeviceConnection(connectedDevice.id);
             setConnectedDevice(null);
+            setEspSSID("");
+            setEspPassword("");
+            setEspTeam(null);
+            setEspDelay(30);
         }
     };
 
