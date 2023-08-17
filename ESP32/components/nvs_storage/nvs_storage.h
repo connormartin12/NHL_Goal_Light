@@ -5,8 +5,7 @@
 
 #define PARTITION_NAME "MyNvs"
 
-typedef struct user_info_struct
-{
+typedef struct user_info_struct {
     char wifi_ssid[33];
     char wifi_password[64];
     char team[22];

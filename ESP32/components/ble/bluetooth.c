@@ -27,7 +27,6 @@ EventGroupHandle_t eventGroup;
 #define DELAY_BIT    BIT5
 
 User_Info *info_buffer;
-
 uint8_t ble_addr_type;
 
 void ble_app_advertise(void);
