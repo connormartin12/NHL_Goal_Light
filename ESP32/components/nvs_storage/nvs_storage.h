@@ -8,7 +8,7 @@
 typedef struct user_info_struct {
     char wifi_ssid[33];
     char wifi_password[64];
-    char team[22];
+    char team[40];
     char delay[4];
 } User_Info;
 

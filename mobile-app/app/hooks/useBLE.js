@@ -8,6 +8,17 @@ const ESP32_PASSWORD = "FF02";
 const ESP32_TEAM = "FF03";
 const ESP32_DELAY = "FF04";
 
+/* The characteristic values read from the esp32 are strings in a null terminated
+   format. This function determines where the null termination is so the string value
+   can be displayed properly as the initial form values. */
+function stringVal(string) {
+    for (let i = 0; i<string.length; i++) {
+        if (string.charCodeAt(i) === 0) {
+            return(string.slice(0, i));
+        }
+    }
+};
+
 function useBLE() {
     const bleManager = useMemo(() => new BleManager(), []);
 
@@ -61,19 +72,17 @@ function useBLE() {
             device.readCharacteristicForService(ESP32_UUID, ESP32_SSID)
                 .then((characteristic) => {
                     const decodedValue = base64.decode(characteristic.value);
-                    if (decodedValue.length > 0) {
-                        setEspSSID(decodedValue);
-                    }
+                    setEspSSID(stringVal(decodedValue));
                 })
             device.readCharacteristicForService(ESP32_UUID, ESP32_PASSWORD)
                 .then((characteristic) => {
                     const decodedValue = base64.decode(characteristic.value);
-                    setEspPassword(decodedValue)
+                    setEspPassword(stringVal(decodedValue));
                 })
             device.readCharacteristicForService(ESP32_UUID, ESP32_TEAM)
                 .then((characteristic) => {
                     const decodedValue = base64.decode(characteristic.value);
-                    // setEspTeam(decodedValue);
+                    setEspTeam(JSON.parse(decodedValue));
                 })
             device.readCharacteristicForService(ESP32_UUID, ESP32_DELAY)
                 .then((characteristic) => {
@@ -88,7 +97,7 @@ function useBLE() {
     const writeData = async ( ssid, password, teamSelection, delay ) => {
         const SSID = base64.encode(ssid);
         const Password = base64.encode(password);
-        const Team = base64.encode(teamSelection);
+        const Team = base64.encode(JSON.stringify(teamSelection));
         const Delay = base64.encode(delay.toString());
 
         if (connectedDevice) {

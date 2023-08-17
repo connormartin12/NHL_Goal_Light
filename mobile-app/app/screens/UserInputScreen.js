@@ -63,7 +63,7 @@ function UserInputScreen( {navigation} ) {
             return;
         }
 
-        writeData(ssid=userData.ssid, password=userData.password, teamSelection=userData.team.name, delay=userData.delay);
+        writeData(ssid=userData.ssid, password=userData.password, teamSelection=userData.team, delay=userData.delay);
         console.log(userData);
         resetForm();
     };
@@ -86,8 +86,8 @@ function UserInputScreen( {navigation} ) {
             <AppForm 
                 enableReinitialize={true}
                 initialValues={{
-                    ssid: [espSSID.length > 0 ? espSSID : ""],
-                    password: [espPassword.length > 0 ? espPassword : ""],
+                    ssid: espSSID,
+                    password: espPassword,
                     team: espTeam,
                     delay: espDelay,
                 }}
