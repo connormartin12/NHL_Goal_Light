@@ -64,7 +64,8 @@ function UserInputScreen( {navigation} ) {
             return;
         }
 
-        writeData(ssid=userData.ssid, password=userData.password, teamSelection=userData.team, delay=userData.delay);
+        writeData(ssid=userData.ssid, password=userData.password, 
+                  teamSelection=userData.team, delay=userData.delay);
         resetForm();
     };
 
@@ -75,7 +76,7 @@ function UserInputScreen( {navigation} ) {
                 style={styles.connectionButton}
                 title={connectedDevice? connectedDevice.name : "Select a Device"}
                 />
-            {!connectedDevice? <AppText style={styles.connectionWarning}>Connect to a Device</AppText> : null}
+            {!connectedDevice? (<AppText style={styles.connectionWarning}>Connect to a Device</AppText>) : null}
             <DeviceModal
                 closeModal={hideModal}
                 connectToPeripheral={connectToDevice}
@@ -134,7 +135,11 @@ function UserInputScreen( {navigation} ) {
                     valueSuffix="Seconds"
                     width={inputFieldWidth}
                 />
-                <SubmitButton title="Submit" width={inputFieldWidth} disabled={connectedDevice? false : true} />
+                <SubmitButton 
+                    title="Submit" 
+                    width={inputFieldWidth} 
+                    disabled={connectedDevice? false : true}
+                />
             </AppForm>
         </Screen>
     );
