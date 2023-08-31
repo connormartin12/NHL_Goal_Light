@@ -7,6 +7,7 @@
 
 #include "bluetooth.h"
 #include "nvs_storage.h"
+#include "oled.h"
 #include "ota.h"
 #include "wifi.h"
 
@@ -30,6 +31,9 @@ void request_user_info()
 
 void app_main(void)
 {
+    // Initialize OLED display
+    //oled_hello();
+
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     esp_err_t result = get_stored_info(&userInfo);
     switch (result)
