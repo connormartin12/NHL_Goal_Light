@@ -20,6 +20,8 @@ char *defaultDelay = "30";
 
 void request_user_info()
 {
+    const char * ble_text = "Waiting for BLE connection...";
+    set_text(ble_text);
     run_ble(&userInfo);
     esp_err_t err = all_values_set();
     if (err) {
@@ -32,7 +34,10 @@ void request_user_info()
 void app_main(void)
 {
     // Initialize OLED display
-    //oled_hello();
+    oled_hello();
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    const char * text = "hehe";
+    set_text(text);
 
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     esp_err_t result = get_stored_info(&userInfo);

@@ -16,8 +16,8 @@ static const char *TAG = "OLED";
 // Basic pin number definitions and hardware information
 #define I2C_HOST              0
 #define LCD_PIXEL_CLOCK_HZ    (400 * 1000) // Default 400,000hz for SSD3016
-#define PIN_NUM_SDA           21
-#define PIN_NUM_SCL           22
+#define PIN_NUM_SCL           1
+#define PIN_NUM_SDA           2
 #define PIN_NUM_RST           -1
 #define I2C_HW_ADDR           0x3C
 // Vertical/Horizontal resolution
@@ -27,17 +27,25 @@ static const char *TAG = "OLED";
 #define LCD_CMD_BITS           8
 #define LCD_PARAM_BITS         8
 
+lv_obj_t *scr;
+lv_obj_t *label;
+
+void set_text(const char *text)
+{
+    lv_label_set_text(label, text);
+}
+
 void example_lvgl_demo_ui(lv_disp_t *disp) 
 {
-    lv_obj_t *scr = lv_disp_get_scr_act(disp);
-    lv_obj_t *label = lv_label_create(scr);
-    lv_label_set_text(label, "Hello World");
+    scr = lv_disp_get_scr_act(disp);
+    label = lv_label_create(scr);
+    lv_label_set_text(label, "Aubby is Gay");
     // lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR); /* Circular scroll */
     // lv_label_set_text(label, "Hello Espressif, Hello LVGL.");
     /* Size of the screen (if you use rotation 90 or 270, please set disp->driver->ver_res) */
     lv_obj_set_width(label, disp->driver->hor_res);
     // lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_align(label, LV_ALIGN_CENTER, 24, 0); // Center alignment not working?
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 0);
 }
 
 void oled_hello() 
@@ -53,8 +61,7 @@ void oled_hello()
         .master.clk_speed = LCD_PIXEL_CLOCK_HZ,
     };
     ESP_ERROR_CHECK(i2c_param_config(I2C_HOST, &i2c_conf));
-    // *****ERROR HERE****** //
-    // ESP_ERROR_CHECK(i2c_driver_install(I2C_HOST, I2C_MODE_MASTER, 0, 0, 0));
+    ESP_ERROR_CHECK(i2c_driver_install(I2C_HOST, I2C_MODE_MASTER, 0, 0, 0));
 
     // Install panel IO
     ESP_LOGI(TAG, "Install panel IO");
@@ -103,7 +110,7 @@ void oled_hello()
     lv_disp_t * disp = lvgl_port_add_disp(&disp_cfg);
 
     /* Rotation of the screen */
-    lv_disp_set_rotation(disp, LV_DISP_ROT_NONE);
+    lv_disp_set_rotation(disp, LV_DISP_ROT_180); // Note: Screen was upside down
 
     // Display LVGL Scroll Text
     ESP_LOGI(TAG, "Display LVGL Scroll Text");
