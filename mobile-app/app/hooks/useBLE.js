@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { BleError, BleManager, Characteristic, Device } from 'react-native-ble-plx';
 import base64 from 'react-native-base64';
 
+import teams from '../config/teams';
+
 const ESP32_UUID = "FFFF";
 const ESP32_SSID = "FF01";
 const ESP32_PASSWORD = "FF02";
@@ -82,7 +84,14 @@ function useBLE() {
             device.readCharacteristicForService(ESP32_UUID, ESP32_TEAM)
                 .then((characteristic) => {
                     const decodedValue = base64.decode(characteristic.value);
-                    setEspTeam(JSON.parse(decodedValue));
+                    const idIndex = decodedValue.indexOf(`"id":`);
+                    let teamId = decodedValue.slice(idIndex+5, idIndex+7);
+                    if (isNaN(teamId[1]) == true)
+                        teamId = teamId.slice(0, 1);
+                    teams.forEach(team => {
+                        if (team.id == teamId)
+                            setEspTeam(team);
+                    });
                 })
             device.readCharacteristicForService(ESP32_UUID, ESP32_DELAY)
                 .then((characteristic) => {
@@ -124,7 +133,9 @@ function useBLE() {
 
     const disconnectFromDevice = () => {
         if (connectedDevice) {
-            bleManager.cancelDeviceConnection(connectedDevice.id);
+            if (connectedDevice == null) {
+                bleManager.cancelDeviceConnection(connectedDevice.id);
+            }
             setConnectedDevice(null);
             setEspSSID("");
             setEspPassword("");

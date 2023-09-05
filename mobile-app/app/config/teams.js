@@ -8,7 +8,7 @@ const teams = [
     { name: "Chicago Blackhawks", id: 16 },
     { name: "Colorado Avalanche", id: 21 },
     { name: "Columbus Blue Jackets", id: 29 },
-    { name: "Dallas Stars", id: 25 },
+    { name: "Dallas Stars", id:25 },
     { name: "Detroit Red Wings", id: 17 },
     { name: "Edmonton Oilers", id: 22 },
     { name: "Florida Panthers", id: 13 },
