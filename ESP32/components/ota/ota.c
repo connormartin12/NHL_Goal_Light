@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "../oled_display/oled.h"
 
 #define TAG "OTA"
 
@@ -37,6 +38,8 @@ esp_err_t validate_image_header(esp_app_desc_t *incoming_ota_desc)
 esp_err_t run_ota(void)
 {
     ESP_LOGI(TAG, "Invoking OTA");
+    const char *ota_update_text = "Checking for updates. . .";
+    set_oled_text(ota_update_text);
 
     const esp_http_client_config_t clientConfig = {
         .url = "https://drive.google.com/uc?export=download&id=1K8wCYV8sNd0d8XkOgQblxe5VN6Nqygi3",
@@ -66,11 +69,15 @@ esp_err_t run_ota(void)
 
     if (validate_image_header(&incoming_ota_desc) != ESP_OK)
     {
+        const char *no_update_text = "No update available";
+        set_oled_text(no_update_text);
         ESP_LOGE(TAG, "validate_image_header failed");
         esp_https_ota_finish(ota_handle);
         return ESP_FAIL;
     }
 
+    const char *ota_update_available_text = "Update Found\n\nInstalling update. . .";
+    set_oled_text(ota_update_available_text);
     while (true)
     {
         esp_err_t ota_result = esp_https_ota_perform(ota_handle);
@@ -81,11 +88,15 @@ esp_err_t run_ota(void)
     if (esp_https_ota_finish(ota_handle) != ESP_OK)
     {
         ESP_LOGE(TAG, "esp_https_ota_finish failed");
+        const char *ota_update_failed_text = "Update failed\n\nPlease try again later";
+        set_oled_text(ota_update_failed_text);
         return ESP_FAIL;
     }
     else
     {
         printf("Restarting in 5 seconds\n");
+        const char *ota_update_completed_text = "Update complete\n\nRestarting in 5 seconds. . .";
+        set_oled_text(ota_update_completed_text);
         vTaskDelay(pdMS_TO_TICKS(5000));
         esp_restart();
     }

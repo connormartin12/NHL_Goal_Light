@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "lvgl.h"
 #include "esp_lvgl_port.h"
+#include "oled.h"
 
 static const char *TAG = "OLED";
 
@@ -27,28 +28,25 @@ static const char *TAG = "OLED";
 #define LCD_CMD_BITS           8
 #define LCD_PARAM_BITS         8
 
+lv_disp_t *disp;
 lv_obj_t *scr;
 lv_obj_t *label;
 
-void set_text(const char *text)
+void set_oled_text(const char *text)
 {
     lv_label_set_text(label, text);
 }
 
-void example_lvgl_demo_ui(lv_disp_t *disp) 
+void setup_ui()
 {
     scr = lv_disp_get_scr_act(disp);
     label = lv_label_create(scr);
-    lv_label_set_text(label, "Aubby is Gay");
-    // lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR); /* Circular scroll */
-    // lv_label_set_text(label, "Hello Espressif, Hello LVGL.");
-    /* Size of the screen (if you use rotation 90 or 270, please set disp->driver->ver_res) */
+    lv_label_set_text(label, "Looking for stored settings. . .");
     lv_obj_set_width(label, disp->driver->hor_res);
-    // lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 0);
 }
 
-void oled_hello() 
+void initialize_oled()
 {
     // Initialize I2C bus
     ESP_LOGI(TAG, "Initialize I2C bus");
@@ -107,12 +105,12 @@ void oled_hello()
             .mirror_y = false,
         }
     };
-    lv_disp_t * disp = lvgl_port_add_disp(&disp_cfg);
+    disp = lvgl_port_add_disp(&disp_cfg);
 
     /* Rotation of the screen */
     lv_disp_set_rotation(disp, LV_DISP_ROT_180); // Note: Screen was upside down
 
     // Display LVGL Scroll Text
     ESP_LOGI(TAG, "Display LVGL Scroll Text");
-    example_lvgl_demo_ui(disp);
+    setup_ui(disp);
 }

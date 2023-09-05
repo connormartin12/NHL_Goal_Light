@@ -20,8 +20,6 @@ char *defaultDelay = "30";
 
 void request_user_info()
 {
-    const char * ble_text = "Waiting for BLE connection...";
-    set_text(ble_text);
     run_ble(&userInfo);
     esp_err_t err = all_values_set();
     if (err) {
@@ -34,10 +32,7 @@ void request_user_info()
 void app_main(void)
 {
     // Initialize OLED display
-    oled_hello();
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
-    const char * text = "hehe";
-    set_text(text);
+    initialize_oled();
 
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     esp_err_t result = get_stored_info(&userInfo);
@@ -49,7 +44,7 @@ void app_main(void)
             request_user_info();
             break;
         case ESP_OK:
-            ESP_LOGI(NVS_TAG, "SSID: %s, Password: %s", userInfo.wifi_ssid, userInfo.wifi_password);
+            ESP_LOGI(NVS_TAG, "User info found");
             break;
         default:
             ESP_LOGE(NVS_TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(result));
@@ -67,10 +62,13 @@ void app_main(void)
     wifi_init();
 
     // If ESP32 cannot connect to the wifi, it should keep returning to ble mode to request correct wifi credentials from the user.
+    const char *wifi_connecting_text = ("Connecting to wifi. . .");
+    set_oled_text(wifi_connecting_text);
     retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
     while (retry != ESP_OK) {
         wifi_disconnect();
         request_user_info();
+        set_oled_text(wifi_connecting_text);
         retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
     }
 

@@ -7,6 +7,7 @@
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
 #include "../nvs_storage/nvs_storage.h"
+#include "../oled_display/oled.h"
 #include "host/ble_hs.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
@@ -154,6 +155,10 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
             ESP_LOGI(TAG, "BLE GAP EVENT CONNECT %s", event->connect.status == 0 ? "OK!" : "FAILED!");
             if (event->connect.status != 0)
                 ble_app_advertise();
+            else {
+                const char *ble_connected_text = "Connected\n\nWaiting for user data. . .";
+                set_oled_text(ble_connected_text);
+            }
             break;
         case BLE_GAP_EVENT_DISCONNECT:
             ESP_LOGI(TAG, "BLE GAP EVENT DISCONNECT");
@@ -173,6 +178,9 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
 
 void ble_app_advertise(void)
 {
+    const char *ble_text = "Waiting for BLE connection. . .";
+    set_oled_text(ble_text);
+
     struct ble_hs_adv_fields fields;
     memset(&fields, 0, sizeof(fields));
     fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_DISC_LTD;
