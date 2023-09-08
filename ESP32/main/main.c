@@ -6,6 +6,7 @@
 #include "nvs_flash.h"
 
 #include "bluetooth.h"
+#include "https_interface.h"
 #include "nvs_storage.h"
 #include "oled.h"
 #include "ota.h"
@@ -75,4 +76,7 @@ void app_main(void)
     esp_err_t err = run_ota();
     if (err) 
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
+
+    // Testing getting JSON data
+    https_test();
 }

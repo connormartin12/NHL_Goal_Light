@@ -10,7 +10,7 @@
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
     ],
-    "idf.port": "/dev/cu.usbmodem101",
+    "idf.port": "/dev/cu.usbmodem1101",
     "idf.pythonBinPath": "/Users/connormartin/esp/esp-idf/tools/python_env/idf5.2_py3.11_env/bin/python",
     "idf.toolsPath": "/Users/connormartin/esp/esp-idf/tools",
     "idf.flashType": "UART",
@@ -18,6 +18,8 @@
         "regex": "c",
         "compare": "c",
         "complex": "c",
-        "functional": "c"
+        "functional": "c",
+        "string.h": "c",
+        "cjson.h": "c"
     }
 }
