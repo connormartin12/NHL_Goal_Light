@@ -5,6 +5,7 @@
 #include "freertos/task.h"
 #include "nvs_flash.h"
 
+#include "audio.h"
 #include "bluetooth.h"
 #include "https_interface.h"
 #include "nvs_storage.h"
@@ -78,5 +79,9 @@ void app_main(void)
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
 
     // Testing getting JSON data
-    https_test();
+    // https_test();
+
+    // Play okst audio file
+    audio_init();
+    play_wav_file();
 }
