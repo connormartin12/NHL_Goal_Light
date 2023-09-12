@@ -79,7 +79,7 @@ void app_main(void)
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
 
     // Testing getting JSON data
-    // https_test();
+    https_test();
 
     // Play okst audio file
     audio_init();

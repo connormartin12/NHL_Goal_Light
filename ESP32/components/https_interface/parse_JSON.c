@@ -11,18 +11,11 @@ static const char *TAG = "PARSE JSON";
 
 esp_err_t parse_buffer(char *bufferStr)
 {
-    // Printing buffer to check passed value is the same
-    printf("%s\n", bufferStr);
-
     // Checking available heap memory
     int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
     printf("dram = %d\n", dram);
 
     cJSON *buffer_json = cJSON_Parse(bufferStr);
-    // cJSON *buffer_json = cJSON_ParseWithLength(bufferStr, sizeof(bufferStr));
-    // printf(buffer_json->valuestring);
-    // char *buffer_string = cJSON_PrintUnformatted(buffer_json);
-    // printf("%s\n", buffer_string);
 
     if(buffer_json == NULL)
     {
@@ -33,22 +26,87 @@ esp_err_t parse_buffer(char *bufferStr)
             return -1;
         }
     }
-    cJSON *team_object = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
-    if (team_object == NULL) {
-        printf("team_object is null\n");
-    } else {
-        char *team_object2 = cJSON_PrintUnformatted(team_object);
-        printf("%s\n", team_object2);
-    }
-    // printf(team->valuestring);
-    cJSON *teamAbbr = cJSON_GetObjectItemCaseSensitive(team_object, "name");
-    // printf("name %s\n", teamID->valuestring);
+
+    cJSON *teamData = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
+    char *team = cJSON_Print(teamData);
+    printf("%s\n", team);
+    
+    dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    printf("dram = %d\n", dram);
+
+    cJSON *teamAbbr = cJSON_GetObjectItemCaseSensitive(teamData, "abbreviation");
     if (teamAbbr == NULL) {
-        printf("teamID is null\n");
-    } else {    
-        char *team_id = cJSON_Print(teamAbbr);
-        printf(team_id);
+        const char *err = cJSON_GetErrorPtr();
+        if(err)
+        {
+            ESP_LOGE(TAG, "Error parsing json before %s", err);
+            return -1;
+        }
+        printf("teamAbbr is NULL: No err\n");
+        return -1;
     }
+    
+    printf("Team Abbreviation: %s\n", teamAbbr->valuestring);
+
+    cJSON_Delete(buffer_json);
+
+    return ESP_OK;
+}
+
+CJSON_PUBLIC(cJSON *) find_game(const cJSON * const games)
+{
+    const cJSON *game = NULL;
+
+    cJSON_ArrayForEach(game, games)
+    {
+        cJSON *home_team = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
+        cJSON *home_team_name = cJSON_GetObjectItemCaseSensitive(home_team, "name");
+
+        cJSON *away_team = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
+        cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team, "name");
+
+        if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0 || 
+            strcmp(away_team_name->valuestring, "Oklahoma State Cowboys") == 0)
+        {
+            return (cJSON * const) game;
+        }
+    }
+
+    return NULL;
+}
+
+esp_err_t parse_score(char *liveScore)
+{
+    // Printing memory that is left
+    int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    printf("dram = %d\n", dram);
+
+    
+    cJSON *games = cJSON_Parse(liveScore);
+    if (games == NULL)
+    {
+        const char *err = cJSON_GetErrorPtr();
+        if(err)
+        {
+            ESP_LOGE(TAG, "Error parsing json before %s", err);
+            return -1;
+        }
+    }
+
+    cJSON *game = find_game(games);
+
+    cJSON *homeTeam = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
+    cJSON *homeTeamName = cJSON_GetObjectItemCaseSensitive(homeTeam, "name");
+    cJSON *homeTeamScore = cJSON_GetObjectItemCaseSensitive(homeTeam, "points");
+    
+    cJSON *awayTeam = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
+    cJSON *awayTeamName = cJSON_GetObjectItemCaseSensitive(awayTeam, "name");
+    cJSON *awayTeamScore = cJSON_GetObjectItemCaseSensitive(awayTeam, "points");
+    
+    printf("%s: %d\n%s: %d\n", homeTeamName->valuestring, homeTeamScore->valueint,
+                               awayTeamName->valuestring, awayTeamScore->valueint);
+
+    cJSON_Delete(games);
 
     return ESP_OK;
 }
