@@ -58,7 +58,7 @@ void https_test()
         ESP_LOGI(TAG, "GET status = %d", esp_http_client_get_status_code(client));
         // printf("buffer******** %s\n", chunk_payload.buffer);
 
-        // parse_buffer((char *)chunk_payload.buffer);
+        // parse_abbreviation((char *)chunk_payload.buffer);
         parse_score((char *)chunk_payload.buffer);
     }
     else

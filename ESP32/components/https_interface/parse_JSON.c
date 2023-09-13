@@ -9,7 +9,21 @@
 
 static const char *TAG = "PARSE JSON";
 
-esp_err_t parse_buffer(char *bufferStr)
+CJSON_PUBLIC(cJSON *) get_abbr(const cJSON * const items)
+{
+    cJSON *item = NULL;
+
+    cJSON_ArrayForEach(item, items)
+    {
+        cJSON *this_item = cJSON_GetObjectItemCaseSensitive(item, "abbreviation");
+        if (this_item != NULL)
+            return this_item;
+    }
+
+    return NULL;
+}
+
+esp_err_t parse_abbreviation(char *bufferStr)
 {
     // Checking available heap memory
     int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
@@ -28,20 +42,10 @@ esp_err_t parse_buffer(char *bufferStr)
     }
 
     cJSON *teamData = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
-    char *team = cJSON_Print(teamData);
-    printf("%s\n", team);
+    // char *team = cJSON_Print(teamData);
+    // printf("%s\n", team);
 
-    cJSON *teamAbbr = cJSON_GetArrayItem(teamData, 4);
-    if (teamAbbr == NULL) {
-        const char *err = cJSON_GetErrorPtr();
-        if(err)
-        {
-            ESP_LOGE(TAG, "Error parsing json before %s", err);
-            return -1;
-        }
-        printf("teamAbbr is NULL: No err\n");
-        return -1;
-    }
+    cJSON *teamAbbr = get_abbr(teamData);
     
     printf("Team Abbreviation: %s\n", teamAbbr->valuestring);
 
