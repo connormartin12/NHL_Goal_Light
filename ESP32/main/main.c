@@ -33,14 +33,25 @@ void request_user_info()
     store_user_info(&userInfo);
 }
 
+// DO NOT RUN OTHER TASKS WHILE THIS FUNCTION IS RUNNING. RESULTS IN AUDIO GLITCHES
 void goal_scored(void)
 {
+    // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
     const char *team_scored_text = "OKST Scored!!!";
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
     play_wav_file();
     gpio_set_level(LED_PIN, 0);
     // update_oled_score();
+}
+
+void get_score(void *params)
+{
+    while (true)
+    {
+        https_test();
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    }
 }
 
 void app_main(void)
@@ -90,11 +101,13 @@ void app_main(void)
     if (err) 
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
 
-    // Testing getting JSON data
-    https_test();
-
-    // Init audio/led and call team_scored function
+    // Init audio/led
     audio_init();
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+
+    // Testing getting JSON data
+    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, NULL);
+
+    // Calling goal_scored function here for fun
     goal_scored();
 }
