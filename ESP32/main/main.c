@@ -19,6 +19,8 @@
 #define WIFI_TAG "WiFi"
 #define LED_PIN 38
 
+static TaskHandle_t score_task = NULL;
+
 User_Info userInfo;
 char *defaultDelay = "30";
 
@@ -36,6 +38,7 @@ void request_user_info()
 // DO NOT RUN OTHER TASKS WHILE THIS FUNCTION IS RUNNING. RESULTS IN AUDIO GLITCHES
 void goal_scored(void)
 {
+    vTaskSuspend(score_task);
     // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
     const char *team_scored_text = "OKST Scored!!!";
     set_oled_text(team_scored_text);
@@ -43,6 +46,7 @@ void goal_scored(void)
     play_wav_file();
     gpio_set_level(LED_PIN, 0);
     // update_oled_score();
+    vTaskResume(score_task);
 }
 
 void get_score(void *params)
@@ -106,7 +110,7 @@ void app_main(void)
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
     // Testing getting JSON data
-    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, NULL);
+    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
 
     // Calling goal_scored function here for fun
     goal_scored();
