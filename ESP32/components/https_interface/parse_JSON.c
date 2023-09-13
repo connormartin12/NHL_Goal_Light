@@ -30,11 +30,8 @@ esp_err_t parse_buffer(char *bufferStr)
     cJSON *teamData = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
     char *team = cJSON_Print(teamData);
     printf("%s\n", team);
-    
-    dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-    printf("dram = %d\n", dram);
 
-    cJSON *teamAbbr = cJSON_GetObjectItemCaseSensitive(teamData, "abbreviation");
+    cJSON *teamAbbr = cJSON_GetArrayItem(teamData, 4);
     if (teamAbbr == NULL) {
         const char *err = cJSON_GetErrorPtr();
         if(err)

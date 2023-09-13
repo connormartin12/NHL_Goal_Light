@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "driver/gpio.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,6 +17,7 @@
 #define NVS_TAG "NVS"
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
+#define LED_PIN 38
 
 User_Info userInfo;
 char *defaultDelay = "30";
@@ -29,6 +31,16 @@ void request_user_info()
     }
     stop_ble();
     store_user_info(&userInfo);
+}
+
+void goal_scored(void)
+{
+    const char *team_scored_text = "OKST Scored!!!";
+    set_oled_text(team_scored_text);
+    gpio_set_level(LED_PIN, 1);
+    play_wav_file();
+    gpio_set_level(LED_PIN, 0);
+    // update_oled_score();
 }
 
 void app_main(void)
@@ -81,7 +93,8 @@ void app_main(void)
     // Testing getting JSON data
     https_test();
 
-    // Play okst audio file
+    // Init audio/led and call team_scored function
     audio_init();
-    play_wav_file();
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+    goal_scored();
 }
