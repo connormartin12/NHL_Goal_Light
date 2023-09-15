@@ -1,3 +1,4 @@
+#include "oled.h"
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -10,7 +11,6 @@
 #include "esp_log.h"
 #include "lvgl.h"
 #include "esp_lvgl_port.h"
-#include "oled.h"
 
 static const char *TAG = "OLED";
 

@@ -1,6 +1,6 @@
+#include "bluetooth.h"
 #include <stdio.h>
 #include <string.h>
-#include "bluetooth.h"
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
 #include "freertos/event_groups.h"

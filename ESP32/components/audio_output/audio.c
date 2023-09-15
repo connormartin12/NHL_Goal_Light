@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "audio.h"
+#include <stdio.h>
 #include "driver/i2s_std.h"
 #include "esp_log.h"
 #include "esp_littlefs.h"
