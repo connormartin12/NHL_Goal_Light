@@ -3,11 +3,16 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include "parse_JSON.h"
+#include "https_interface.h"
 
 // Included for debugging
 #include "esp_heap_caps.h"
 
 static const char *TAG = "PARSE JSON";
+
+int user_team_score = 0;
+int other_team_score = 0;
+bool scored = false;
 
 CJSON_PUBLIC(cJSON *) get_abbr(const cJSON * const items)
 {
@@ -54,35 +59,12 @@ esp_err_t parse_abbreviation(char *bufferStr)
     return ESP_OK;
 }
 
-CJSON_PUBLIC(cJSON *) find_game(const cJSON * const games)
-{
-    const cJSON *game = NULL;
-
-    cJSON_ArrayForEach(game, games)
-    {
-        cJSON *home_team = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
-        cJSON *home_team_name = cJSON_GetObjectItemCaseSensitive(home_team, "name");
-
-        cJSON *away_team = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
-        cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team, "name");
-
-        if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0 || 
-            strcmp(away_team_name->valuestring, "Oklahoma State Cowboys") == 0)
-        {
-            return (cJSON * const) game;
-        }
-    }
-
-    return NULL;
-}
-
 esp_err_t parse_score(char *liveScore)
 {
     // Printing memory that is left
     int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
     printf("dram = %d\n", dram);
 
-    
     cJSON *games = cJSON_Parse(liveScore);
     if (games == NULL)
     {
@@ -94,20 +76,44 @@ esp_err_t parse_score(char *liveScore)
         }
     }
 
-    cJSON *game = find_game(games);
+    scored = false;
+    const cJSON *game = NULL;
+    cJSON_ArrayForEach(game, games)
+    {
+        cJSON *home_team = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
+        cJSON *home_team_name = cJSON_GetObjectItemCaseSensitive(home_team, "name");
 
-    cJSON *homeTeam = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
-    cJSON *homeTeamName = cJSON_GetObjectItemCaseSensitive(homeTeam, "name");
-    cJSON *homeTeamScore = cJSON_GetObjectItemCaseSensitive(homeTeam, "points");
-    
-    cJSON *awayTeam = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
-    cJSON *awayTeamName = cJSON_GetObjectItemCaseSensitive(awayTeam, "name");
-    cJSON *awayTeamScore = cJSON_GetObjectItemCaseSensitive(awayTeam, "points");
-    
-    printf("%s: %d\n%s: %d\n", homeTeamName->valuestring, homeTeamScore->valueint,
-                               awayTeamName->valuestring, awayTeamScore->valueint);
+        cJSON *away_team = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
+        cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team, "name");
 
+        if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0 || 
+            strcmp(away_team_name->valuestring, "Oklahoma State Cowboys") == 0)
+        {
+            cJSON *home_team_score = cJSON_GetObjectItemCaseSensitive(home_team, "points");
+            cJSON *away_team_score = cJSON_GetObjectItemCaseSensitive(away_team, "points");
+            int home_score = home_team_score->valueint;
+            int away_score = away_team_score->valueint;
+
+            if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0)
+            {
+                if (home_score > user_team_score)
+                    scored = true;
+                user_team_score = home_score;
+                other_team_score = away_score;
+            }
+            else
+            {
+                if (away_score > user_team_score)
+                    scored = true;
+                user_team_score = away_score;
+                other_team_score = home_score;
+            }
+
+            goto end;
+        }
+    }
+
+end:
     cJSON_Delete(games);
-
     return ESP_OK;
 }

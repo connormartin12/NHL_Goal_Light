@@ -20,6 +20,14 @@
         "complex": "c",
         "functional": "c",
         "string.h": "c",
-        "cjson.h": "c"
+        "cjson.h": "c",
+        "array": "c",
+        "deque": "c",
+        "list": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "vector": "c",
+        "string_view": "c",
+        "initializer_list": "c"
     }
 }

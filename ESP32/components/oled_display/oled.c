@@ -37,8 +37,14 @@ void set_oled_text(const char *text)
     lv_label_set_text(label, text);
 }
 
+void update_oled_score(int top_score, int bottom_score)
+{
+    lv_label_set_text_fmt(label, "OSKT: %d\nUSA: %d", top_score, bottom_score);
+}
+
 void setup_ui()
 {
+
     scr = lv_disp_get_scr_act(disp);
     label = lv_label_create(scr);
     lv_label_set_text(label, "Looking for stored settings. . .");

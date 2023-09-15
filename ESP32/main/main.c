@@ -38,6 +38,7 @@ void request_user_info()
 // DO NOT RUN OTHER TASKS WHILE THIS FUNCTION IS RUNNING. RESULTS IN AUDIO GLITCHES
 void goal_scored(void)
 {
+    // Suspend might not be needed if this is called from the get_score function
     vTaskSuspend(score_task);
     // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
     const char *team_scored_text = "OKST Scored!!!";
@@ -45,7 +46,6 @@ void goal_scored(void)
     gpio_set_level(LED_PIN, 1);
     play_wav_file();
     gpio_set_level(LED_PIN, 0);
-    // update_oled_score();
     vTaskResume(score_task);
 }
 
@@ -54,14 +54,22 @@ void get_score(void *params)
     while (true)
     {
         https_test();
+        if (scored == true)
+            goal_scored();
+        update_oled_score(user_team_score, other_team_score);
+
+        printf("Oklahoma State Cowboys: %d\nSouth Alabama Jaguars: %d\n", user_team_score, other_team_score);
+
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
 
 void app_main(void)
 {
-    // Initialize OLED display
+    // Initialize OLED display, audio, and LED pin
     initialize_oled();
+    audio_init();
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     esp_err_t result = get_stored_info(&userInfo);
@@ -105,11 +113,8 @@ void app_main(void)
     if (err) 
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
 
-    // Init audio/led
-    audio_init();
-    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
-
     // Testing getting JSON data
+    // ToDo: Refine the memory allocation of this task
     xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
 
     // Calling goal_scored function here for fun

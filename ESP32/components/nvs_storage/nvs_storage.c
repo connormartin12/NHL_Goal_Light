@@ -19,11 +19,6 @@ esp_err_t get_stored_info(User_Info *userSettings)
 
 void store_user_info(User_Info *userSettings)
 {
-    // ESP_ERROR_CHECK(nvs_flash_init_partition(PARTITION_NAME));
     ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void *)userSettings, userInfoSize));
     ESP_ERROR_CHECK(nvs_commit(user_info_handle));
 }
-
-    //     ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void*)&userInfo, userInfoSize));
-    //     ESP_ERROR_CHECK(nvs_commit(user_info_handle));
-    //     nvs_close(user_info_handle);
