@@ -4,6 +4,7 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include "https_interface.h"
+#include "../nvs_storage/nvs_storage.h"
 
 // Included for debugging
 #include "esp_heap_caps.h"
@@ -13,6 +14,7 @@ static const char *TAG = "PARSE JSON";
 int user_team_score = 0;
 int other_team_score = 0;
 bool scored = false;
+const char *user_team = "Oklahoma State Cowboys";
 
 CJSON_PUBLIC(cJSON *) get_abbr(const cJSON * const items)
 {
@@ -86,15 +88,15 @@ esp_err_t parse_score(char *liveScore)
         cJSON *away_team = cJSON_GetObjectItemCaseSensitive(game, "awayTeam");
         cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team, "name");
 
-        if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0 || 
-            strcmp(away_team_name->valuestring, "Oklahoma State Cowboys") == 0)
+        if (strcmp(home_team_name->valuestring, user_team) == 0 || 
+            strcmp(away_team_name->valuestring, user_team) == 0)
         {
             cJSON *home_team_score = cJSON_GetObjectItemCaseSensitive(home_team, "points");
             cJSON *away_team_score = cJSON_GetObjectItemCaseSensitive(away_team, "points");
             int home_score = home_team_score->valueint;
             int away_score = away_team_score->valueint;
 
-            if (strcmp(home_team_name->valuestring, "Oklahoma State Cowboys") == 0)
+            if (strcmp(home_team_name->valuestring, user_team) == 0)
             {
                 if (home_score > user_team_score)
                     scored = true;
@@ -112,6 +114,9 @@ esp_err_t parse_score(char *liveScore)
             goto end;
         }
     }
+
+    ESP_LOGE(TAG, "No game found");
+    goto end;
 
 end:
     cJSON_Delete(games);

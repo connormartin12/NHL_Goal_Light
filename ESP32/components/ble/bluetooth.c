@@ -1,6 +1,7 @@
 #include "bluetooth.h"
 #include <stdio.h>
 #include <string.h>
+#include "cJSON.h"
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
 #include "freertos/event_groups.h"
@@ -84,7 +85,23 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
             memcpy(info_buffer->team, ctxt->om->om_data, ctxt->om->om_len);
             info_buffer->team[ctxt->om->om_len] = '\x0';
+
+            cJSON *team_object = cJSON_Parse(info_buffer->team);
+            if (team_object == NULL)
+            {
+                const char *err = cJSON_GetErrorPtr();
+                if (err)
+                {
+                    ESP_LOGE(TAG, "Error parsing json before %s", err);
+                    return 1;
+                }
+            }
+
+            cJSON *team_name = cJSON_GetObjectItemCaseSensitive(team_object, "name");
+            memcpy(info_buffer->team_name, team_name->valuestring, strlen(team_name->valuestring));
+
             printf("Incoming message: %s\n", info_buffer->team);
+            printf("Incoming message: %s\n", info_buffer->team_name);
             xEventGroupSetBits(eventGroup, TEAM_BIT);
             return 0;
 

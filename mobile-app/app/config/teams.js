@@ -1,4 +1,5 @@
 const teams = [
+    { name: "Oklahoma State Cowboys", id: 99},
     { name: "Anaheim Ducks", id: 24 },
     { name: "Arizona Coyotes", id: 53 },
     { name: "Boston Bruins", id: 6 },

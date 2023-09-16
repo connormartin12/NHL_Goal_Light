@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "nvs_flash.h"
 
 #include "audio.h"
@@ -18,8 +19,10 @@
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
 #define LED_PIN 38
+#define BLE_PIN 39
 
 static TaskHandle_t score_task = NULL;
+QueueHandle_t interruptQueue;
 
 User_Info userInfo;
 char *defaultDelay = "30";
@@ -35,18 +38,44 @@ void request_user_info()
     store_user_info(&userInfo);
 }
 
+static void IRAM_ATTR gpio_isr_handler(void *args)
+{
+    int pinNumber = (int)args;
+    xQueueSendFromISR(interruptQueue, &pinNumber, NULL);
+}
+
+void button_pushed_task(void *params)
+{
+    int pinNumber = 0;
+    while (true)
+    {
+        if (xQueueReceive(interruptQueue, &pinNumber, portMAX_DELAY))
+        {
+            vTaskSuspend(score_task);
+            gpio_isr_handler_remove(pinNumber);
+
+            do
+            {
+                vTaskDelay(20 / portTICK_PERIOD_MS);
+            } while (gpio_get_level(pinNumber) == 1);
+            
+            request_user_info();
+
+            gpio_isr_handler_add(pinNumber, gpio_isr_handler, (void *)pinNumber);
+            vTaskResume(score_task);
+        }
+    }
+}
+
 // DO NOT RUN OTHER TASKS WHILE THIS FUNCTION IS RUNNING. RESULTS IN AUDIO GLITCHES
 void goal_scored(void)
 {
-    // Suspend might not be needed if this is called from the get_score function
-    vTaskSuspend(score_task);
     // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
     const char *team_scored_text = "OKST Scored!!!";
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
     play_wav_file();
     gpio_set_level(LED_PIN, 0);
-    vTaskResume(score_task);
 }
 
 void get_score(void *params)
@@ -109,14 +138,27 @@ void app_main(void)
         retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
     }
 
+    // Check for software updates
     esp_err_t err = run_ota();
     if (err) 
         ESP_LOGE(OTA_TAG, "Failed to perform OTA upadate");
-
-    // Testing getting JSON data
-    // ToDo: Refine the memory allocation of this task
-    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
-
+    
+    /* REMOVE FOLLOWING LINE OF CODE WHEN FINISHED TESTING LIVE GAME*/
     // Calling goal_scored function here for fun
     goal_scored();
+
+    // Testing JSON parsing
+    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
+
+    // Interrupt pin setup for user to connect to esp BLE at their will
+    gpio_set_direction(BLE_PIN, GPIO_MODE_INPUT);
+    gpio_pulldown_en(BLE_PIN);
+    gpio_pullup_dis(BLE_PIN);
+    gpio_set_intr_type(BLE_PIN, GPIO_INTR_POSEDGE);
+
+    interruptQueue = xQueueCreate(10, sizeof(int));
+    xTaskCreate(&button_pushed_task, "Run BLE", 10000, NULL, 1, NULL);
+    
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(BLE_PIN, gpio_isr_handler, (void *)BLE_PIN);
 }
