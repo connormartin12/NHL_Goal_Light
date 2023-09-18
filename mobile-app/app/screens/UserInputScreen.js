@@ -66,6 +66,7 @@ function UserInputScreen( {navigation} ) {
 
         writeData(ssid=userData.ssid, password=userData.password, 
                   teamSelection=userData.team, delay=userData.delay);
+        disconnectFromDevice();
         resetForm();
     };
 
