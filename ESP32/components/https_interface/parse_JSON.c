@@ -13,6 +13,7 @@ static const char *TAG = "PARSE JSON";
 
 int user_team_score = 0;
 int other_team_score = 0;
+bool init_score = true;
 bool scored = false;
 const char *user_team = "Oklahoma State Cowboys";
 
@@ -98,15 +99,21 @@ esp_err_t parse_score(char *liveScore)
 
             if (strcmp(home_team_name->valuestring, user_team) == 0)
             {
-                if (home_score > user_team_score)
+                if (init_score) // If this is first time getting score, it will not set off goal_scored function
+                    init_score = false;
+                else if ((home_score > user_team_score))
                     scored = true;
+
                 user_team_score = home_score;
                 other_team_score = away_score;
             }
             else
             {
-                if (away_score > user_team_score)
+                if (init_score)
+                    init_score = false;
+                else if ((away_score > user_team_score))
                     scored = true;
+
                 user_team_score = away_score;
                 other_team_score = home_score;
             }

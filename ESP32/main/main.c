@@ -145,7 +145,7 @@ void app_main(void)
     
     /* REMOVE FOLLOWING LINE OF CODE WHEN FINISHED TESTING LIVE GAME*/
     // Calling goal_scored function here for fun
-    goal_scored();
+    // goal_scored();
 
     // Testing JSON parsing
     xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);

@@ -28,6 +28,8 @@
         "unordered_map": "c",
         "vector": "c",
         "string_view": "c",
-        "initializer_list": "c"
+        "initializer_list": "c",
+        "esp_heap_caps.h": "c",
+        "https_interface.h": "c"
     }
 }
