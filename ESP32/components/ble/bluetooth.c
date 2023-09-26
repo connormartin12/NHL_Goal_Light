@@ -14,7 +14,7 @@
 #include "services/gatt/ble_svc_gatt.h"
 
 #define TAG "BLE"
-#define DEVICE_NAME "ESP32"
+#define DEVICE_NAME "Goal Light"
 
 #define DEVICE_SERVICE 0xFFFF
 #define SSID_CHR       0xFF01

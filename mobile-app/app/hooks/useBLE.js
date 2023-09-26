@@ -46,7 +46,7 @@ function useBLE() {
             if (error) {
                 console.log(error);
             }
-            if(device && device.name?.includes("ESP32")) {
+            if(device && device.name?.includes("Goal Light")) {
                 setAllDevices((prevState) => {
                     if(!isDuplicateDevice(prevState, device)) {
                         return [...prevState, device]
