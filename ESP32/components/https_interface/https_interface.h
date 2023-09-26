@@ -7,6 +7,6 @@ extern int user_team_score;
 extern int other_team_score;
 extern bool scored;
 
-void https_test(void);
+void https_get(char *team_name);
 
 #endif

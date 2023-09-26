@@ -82,12 +82,12 @@ void get_score(void *params)
 {
     while (true)
     {
-        https_test();
+        https_get(userInfo.team_name);
         if (scored == true)
             goal_scored();
         update_oled_score(user_team_score, other_team_score);
 
-        printf("Oklahoma State Cowboys: %d\nSouth Alabama Jaguars: %d\n", user_team_score, other_team_score);
+        printf("Dallas Stars: %d\nMinnesota Wild: %d\n", user_team_score, other_team_score);
 
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }

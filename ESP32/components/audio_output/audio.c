@@ -65,7 +65,7 @@ esp_err_t audio_init(void)
 
 esp_err_t play_wav_file(void)
 {
-    FILE *fh = fopen("/littlefs/okst.wav", "rb");
+    FILE *fh = fopen("/littlefs/DallasStars.wav", "rb");
     if (fh == NULL)
     {
     ESP_LOGE(TAG, "Failed to open file");

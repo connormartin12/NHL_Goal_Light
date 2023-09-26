@@ -39,7 +39,7 @@ void set_oled_text(const char *text)
 
 void update_oled_score(int top_score, int bottom_score)
 {
-    lv_label_set_text_fmt(label, "OSKT: %d\nUSA: %d", top_score, bottom_score);
+    lv_label_set_text_fmt(label, "DAL: %d\nMIN: %d", top_score, bottom_score);
 }
 
 void setup_ui()

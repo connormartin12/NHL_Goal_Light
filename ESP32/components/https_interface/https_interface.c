@@ -7,8 +7,8 @@
 #include "parse_JSON.h"
 
 static const char *TAG = "HTTPS";
-// extern const uint8_t cert[] asm("_binary_NHL_API_crt_start");
-extern const uint8_t cert[] asm("_binary_collegefootballdata_crt_start");
+extern const uint8_t cert[] asm("_binary_NHL_API_crt_start");
+// extern const uint8_t cert[] asm("_binary_collegefootballdata_crt_start");
 
 typedef struct chunk_payload_t
 {
@@ -38,21 +38,22 @@ esp_err_t on_client_data(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-void https_test()
+void https_get(char *user_team_name)
 {
     chunk_payload_t chunk_payload = {0};
 
     esp_http_client_config_t esp_http_client_config = {
         // .url = "https://statsapi.web.nhl.com/api/v1/teams/25",
-        .url = "https://api.collegefootballdata.com/scoreboard?classification=fbs&conference=b12",
+        .url = "https://statsapi.web.nhl.com/api/v1/schedule",
+        // .url = "https://api.collegefootballdata.com/scoreboard?classification=fbs&conference=b12",
         .method = HTTP_METHOD_GET,
         .event_handler = on_client_data,
         .user_data = &chunk_payload,
         .cert_pem = (char *)cert,
     };
     esp_http_client_handle_t client = esp_http_client_init(&esp_http_client_config);
-    esp_http_client_set_header(client, "accept", "application/json");
-    esp_http_client_set_header(client, "Authorization", "bearer ZbU1jGAAeWbmmrT3sFsasaY7lickGsa5Wlf54ziDTV0Mr+MrjiUn23XwBRc+1Ngf");
+    // esp_http_client_set_header(client, "accept", "application/json");
+    // esp_http_client_set_header(client, "Authorization", "bearer ZbU1jGAAeWbmmrT3sFsasaY7lickGsa5Wlf54ziDTV0Mr+MrjiUn23XwBRc+1Ngf");
     esp_err_t err = esp_http_client_perform(client);
     if(err == ESP_OK)
     {
@@ -60,7 +61,8 @@ void https_test()
         // printf("buffer******** %s\n", chunk_payload.buffer);
 
         // parse_abbreviation((char *)chunk_payload.buffer);
-        parse_score((char *)chunk_payload.buffer);
+        // parse_football_score((char *)chunk_payload.buffer);
+        parse_score((char *)chunk_payload.buffer, user_team_name);
     }
     else
     {
