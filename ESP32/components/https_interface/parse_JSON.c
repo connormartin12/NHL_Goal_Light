@@ -91,26 +91,28 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
 
     cJSON *game = NULL;
     cJSON *teams = NULL;
+    scored = false;
     cJSON_ArrayForEach(game, games)
     {
         teams = cJSON_GetObjectItemCaseSensitive(game, "teams");
 
-        cJSON *away_team = cJSON_GetObjectItemCaseSensitive(teams, "away");
-        cJSON *away_team_score = cJSON_GetObjectItemCaseSensitive(away_team, "score");
-        cJSON *away_team_info = cJSON_GetObjectItemCaseSensitive(away_team, "team");
-        cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team_info, "name");
-
         cJSON *home_team = cJSON_GetObjectItemCaseSensitive(teams, "home");
-        cJSON *home_team_score = cJSON_GetObjectItemCaseSensitive(home_team, "score");
         cJSON *home_team_info = cJSON_GetObjectItemCaseSensitive(home_team, "team");
         cJSON *home_team_name = cJSON_GetObjectItemCaseSensitive(home_team_info, "name");
 
-        int home_score = home_team_score->valueint;
-        int away_score = away_team_score->valueint;
+        cJSON *away_team = cJSON_GetObjectItemCaseSensitive(teams, "away");
+        cJSON *away_team_info = cJSON_GetObjectItemCaseSensitive(away_team, "team");
+        cJSON *away_team_name = cJSON_GetObjectItemCaseSensitive(away_team_info, "name");
+
         if (strcmp(home_team_name->valuestring, user_team_name) == 0 || 
             strcmp(away_team_name->valuestring, user_team_name) == 0)
         {
-            if (strcmp(home_team_name->valuestring, user_team) == 0)
+            cJSON *home_team_score = cJSON_GetObjectItemCaseSensitive(home_team, "score");
+            cJSON *away_team_score = cJSON_GetObjectItemCaseSensitive(away_team, "score");
+            int home_score = home_team_score->valueint;
+            int away_score = away_team_score->valueint;
+
+            if (strcmp(home_team_name->valuestring, user_team_name) == 0)
             {
                 if (init_score) // If this is first time getting score, it will not set off goal_scored function
                     init_score = false;
