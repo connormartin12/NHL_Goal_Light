@@ -26,7 +26,7 @@ esp_err_t on_client_data(esp_http_client_event_t *evt)
             chunk_payload->buffer = realloc(chunk_payload->buffer, chunk_payload->buffer_index + evt->data_len + 1); // +1 is for null terminator
             memcpy(&chunk_payload->buffer[chunk_payload->buffer_index], (uint8_t *)evt->data, evt->data_len);
             chunk_payload->buffer_index = chunk_payload->buffer_index + evt->data_len;
-            chunk_payload->buffer[chunk_payload->buffer_index] = NULL;
+            chunk_payload->buffer[chunk_payload->buffer_index] = '\x0';
 
             // The following print statement WAS causing a WDT error (watchdogtimer)
             // printf("buffer******** %s\n", chunk_payload->buffer);
