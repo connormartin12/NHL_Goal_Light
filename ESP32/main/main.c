@@ -71,7 +71,7 @@ void button_pushed_task(void *params)
 void goal_scored(void)
 {
     // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
-    const char *team_scored_text = "Dallas Stars Scored!!!";
+    const char *team_scored_text = "Dallas Stars Score!!!";
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
     play_wav_file();
