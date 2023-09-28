@@ -10,12 +10,19 @@
 #include "esp_heap_caps.h"
 
 static const char *TAG = "PARSE JSON";
-
+char *user_team_abbr;
+char *other_team_abbr;
+int user_team_id = 0;
+int other_team_id = 0;
 int user_team_score = 0;
 int other_team_score = 0;
+bool init_teams = true;
 bool init_score = true;
 bool scored = false;
 const char *user_team = "Oklahoma State Cowboys";
+
+cJSON *home_team_id = NULL;
+cJSON *away_team_id = NULL;
 
 CJSON_PUBLIC(cJSON *) get_abbr(const cJSON * const items)
 {
@@ -50,8 +57,6 @@ esp_err_t parse_abbreviation(char *bufferStr)
     }
 
     cJSON *teamData = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
-    // char *team = cJSON_Print(teamData);
-    // printf("%s\n", team);
 
     cJSON *teamAbbr = get_abbr(teamData);
     
@@ -60,6 +65,14 @@ esp_err_t parse_abbreviation(char *bufferStr)
     cJSON_Delete(buffer_json);
 
     return ESP_OK;
+}
+
+void set_abbr(const cJSON * const home_team_info, const cJSON * const away_team_info)
+{
+    init_score = false;
+    init_abbr = true;
+    home_team_id = cJSON_GetObjectItemCaseSensitive(home_team_info, "id");
+    away_team_id = cJSON_GetObjectItemCaseSensitive(away_team_info, "id");
 }
 
 esp_err_t parse_score(char *bufferStr, char *user_team_name)
@@ -114,8 +127,12 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
 
             if (strcmp(home_team_name->valuestring, user_team_name) == 0)
             {
-                if (init_score) // If this is first time getting score, it will not set off goal_scored function
-                    init_score = false;
+                if (init_score) { // If this is first time getting score, it will not set off goal_scored function
+                    set_abbr(home_team_info, away_team_info);
+                    
+                    user_team_id = home_team_id->valueint;
+                    other_team_id = away_team_id->valueint;
+                }    
                 else if ((home_score > user_team_score))
                     scored = true;
 
@@ -124,8 +141,12 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
             }
             else
             {
-                if (init_score)
-                    init_score = false;
+                if (init_score) {
+                    set_abbr(home_team_info, away_team_info);
+
+                    user_team_id = away_team_id->valueint;
+                    other_team_id = home_team_id->valueint;
+                }
                 else if ((away_score > user_team_score))
                     scored = true;
 
@@ -138,6 +159,51 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
     }
 
     ESP_LOGE(TAG, "No game found");
+    goto end;
+
+end:
+    cJSON_Delete(buffer_json);
+    return ESP_OK;
+}
+
+esp_err_t parse_abbr(char *bufferStr)
+{
+    // Checking available heap memory
+    int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    printf("dram = %d\n", dram);
+
+    cJSON *buffer_json = cJSON_Parse(bufferStr);
+    if(buffer_json == NULL)
+    {
+        const char *err = cJSON_GetErrorPtr();
+        if(err)
+        {
+            ESP_LOGE(TAG, "Error parsing json before %s", err);
+            return -1;
+        }
+    }
+
+    cJSON *teams = cJSON_GetObjectItemCaseSensitive(buffer_json, "teams");
+    cJSON *item = NULL;
+    cJSON *abbreviation = NULL;
+    cJSON_ArrayForEach(item, teams)
+    {
+        abbreviation = cJSON_GetObjectItemCaseSensitive(item, "abbreviation");
+        if (abbreviation != NULL) {
+            if (user_team_abbr == NULL) {
+                user_team_abbr = (char *)calloc(sizeof(abbreviation->valuestring), sizeof(char));
+                memcpy(user_team_abbr, abbreviation->valuestring, strlen(abbreviation->valuestring));
+                printf("%s\n", user_team_abbr);
+            } else {
+                other_team_abbr = (char *)calloc(sizeof(abbreviation->valuestring), sizeof(char));
+                memcpy(other_team_abbr, abbreviation->valuestring, strlen(abbreviation->valuestring));
+                printf("%s\n", other_team_abbr);
+            }
+            goto end;
+        }
+    }
+
+    ESP_LOGE(TAG, "Error parsing team abbreviation");
     goto end;
 
 end:

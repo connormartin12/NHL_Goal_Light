@@ -82,12 +82,17 @@ void get_score(void *params)
 {
     while (true)
     {
-        https_get(userInfo.team_name);
+        https_get_score(userInfo.team_name);
         if (scored == true)
             goal_scored();
-        update_oled_score(user_team_score, other_team_score);
+        if (init_abbr == true) {
+            https_get_abbr(user_team_id);
+            https_get_abbr(other_team_id);
+            init_abbr = false;
+        }
+        update_oled_score();
 
-        printf("Dallas Stars: %d\nMinnesota Wild: %d\n", user_team_score, other_team_score);
+        printf("%s: %d\n%s: %d\n", user_team_abbr, user_team_score, other_team_abbr, other_team_score);
 
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
@@ -147,7 +152,6 @@ void app_main(void)
     // Calling goal_scored function here for fun
     // goal_scored();
 
-    // Testing JSON parsing
     xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
 
     // Interrupt pin setup for user to connect to esp BLE at their will

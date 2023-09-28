@@ -11,6 +11,7 @@
 #include "esp_log.h"
 #include "lvgl.h"
 #include "esp_lvgl_port.h"
+#include "../https_interface/https_interface.h"
 
 static const char *TAG = "OLED";
 
@@ -37,9 +38,10 @@ void set_oled_text(const char *text)
     lv_label_set_text(label, text);
 }
 
-void update_oled_score(int top_score, int bottom_score)
+void update_oled_score()
 {
-    lv_label_set_text_fmt(label, "DAL: %d\nMIN: %d", top_score, bottom_score);
+    lv_label_set_text_fmt(label, "%s: %d\n%s: %d", user_team_abbr, user_team_score, 
+                                                   other_team_abbr, other_team_score);
 }
 
 void setup_ui()

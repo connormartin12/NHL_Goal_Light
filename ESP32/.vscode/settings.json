@@ -30,6 +30,8 @@
         "string_view": "c",
         "initializer_list": "c",
         "esp_heap_caps.h": "c",
-        "https_interface.h": "c"
+        "https_interface.h": "c",
+        "parse_json.h": "c",
+        "stdbool.h": "c"
     }
 }
