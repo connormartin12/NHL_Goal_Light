@@ -33,23 +33,30 @@ lv_disp_t *disp;
 lv_obj_t *scr;
 lv_obj_t *label;
 
+static lv_style_t info_style;
+static lv_style_t score_style;
+
 void set_oled_text(const char *text)
 {
+    lv_obj_add_style(label, &info_style, 0);
     lv_label_set_text(label, text);
 }
 
 void update_oled_score()
 {
+    lv_obj_add_style(label, &score_style, 0);
     lv_label_set_text_fmt(label, "%s: %d\n%s: %d", user_team_abbr, user_team_score, 
                                                    other_team_abbr, other_team_score);
 }
 
 void setup_ui()
 {
-
     scr = lv_disp_get_scr_act(disp);
     label = lv_label_create(scr);
-    lv_label_set_text(label, "Looking for stored settings. . .");
+    lv_style_init(&info_style);
+    lv_style_set_text_font(&info_style, &lv_font_montserrat_14);
+    lv_style_init(&score_style);
+    lv_style_set_text_font(&score_style, &lv_font_montserrat_24);
     lv_obj_set_width(label, disp->driver->hor_res);
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 0);
 }

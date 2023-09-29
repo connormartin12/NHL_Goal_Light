@@ -106,6 +106,8 @@ void app_main(void)
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
+    const char *stored_info_text = ("Looking for stored settings. . .");
+    set_oled_text(stored_info_text);
     esp_err_t result = get_stored_info(&userInfo);
     switch (result)
     {
