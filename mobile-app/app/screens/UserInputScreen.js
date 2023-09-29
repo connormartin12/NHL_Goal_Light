@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import * as Yup from 'yup';
 
+// Remove with better styling
+import { Modal, Pressable, Text } from 'react-native';
+
+import AdditionalSettingsModal, { additionalSettingsModal } from '../components/AdditionalSettingsModal';
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
 import { colors, teams } from '../config';
 import Screen from '../components/Screen';
@@ -35,7 +39,8 @@ function UserInputScreen( {navigation} ) {
         writeData,
     } = useBLE();
 
-    const [modalVisible, setModalVisible] = useState(false);
+    const [deviceModalVisible, setDeviceModalVisible] = useState(false);
+    const [settingsModalVisible, setSettingsModalVisible] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(true);
 
     const scanForDevices = async () => {
@@ -46,17 +51,22 @@ function UserInputScreen( {navigation} ) {
     };
 
     const hideModal = () => {
-        setModalVisible(false);
+        setDeviceModalVisible(false);
+        setSettingsModalVisible(false);
     };
 
     const openModal = () => {
         scanForDevices();
-        setModalVisible(true);
+        setDeviceModalVisible(true);
     };
 
     useEffect(() => {
         openModal();
     }, []);
+
+    const additionalSettingsModal = () => {
+        setSettingsModalVisible(true);
+    };
 
     const handleSubmit = ( userData, { resetForm }) => {
         if (!connectedDevice) {
@@ -82,7 +92,7 @@ function UserInputScreen( {navigation} ) {
                 closeModal={hideModal}
                 connectToPeripheral={connectToDevice}
                 devices={allDevices}
-                visible={modalVisible}
+                visible={deviceModalVisible}
             />
 
             <AppForm 
@@ -136,6 +146,17 @@ function UserInputScreen( {navigation} ) {
                     valueSuffix="Seconds"
                     width={inputFieldWidth}
                 />
+                <Pressable 
+                    disabled={connectedDevice? false : true} 
+                    onPress={additionalSettingsModal}
+                    style={styles.additionalSettings}
+                >
+                    <Text style={styles.additionalSettingsText}>Additional Settings</Text>
+                </Pressable>
+                <AdditionalSettingsModal 
+                    closeModal={hideModal}
+                    visible={settingsModalVisible}
+                />
                 <SubmitButton 
                     title="Submit" 
                     width={inputFieldWidth} 
@@ -147,6 +168,13 @@ function UserInputScreen( {navigation} ) {
 };
 
 const styles = StyleSheet.create({
+    additionalSettings: {
+        marginTop: 24,
+    },
+    additionalSettingsText: {
+        fontSize: 20,
+        textDecorationLine: 'underline',
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
