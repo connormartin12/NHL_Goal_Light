@@ -142,6 +142,8 @@ static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_g
     printf("Incoming message: %s\n", incoming_message);
     if (strcmp(incoming_message, "reset") == 0) {
         erase_user_info();
+        const char *reset_text = "Resetting device in 3 seconds. . .";
+        set_oled_text(reset_text);
         ESP_LOGW(TAG, "Restarting in 3 seconds");
         vTaskDelay(3000 / portTICK_PERIOD_MS);
         esp_restart();
