@@ -149,11 +149,9 @@ esp_err_t parse_abbr(char *bufferStr)
             if (user_team_abbr == NULL) {
                 user_team_abbr = (char *)calloc(sizeof(abbreviation->valuestring), sizeof(char));
                 memcpy(user_team_abbr, abbreviation->valuestring, strlen(abbreviation->valuestring));
-                printf("%s\n", user_team_abbr);
             } else {
                 other_team_abbr = (char *)calloc(sizeof(abbreviation->valuestring), sizeof(char));
                 memcpy(other_team_abbr, abbreviation->valuestring, strlen(abbreviation->valuestring));
-                printf("%s\n", other_team_abbr);
             }
             goto end;
         }
