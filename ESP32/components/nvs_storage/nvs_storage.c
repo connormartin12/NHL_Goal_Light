@@ -22,3 +22,8 @@ void store_user_info(User_Info *userSettings)
     ESP_ERROR_CHECK(nvs_set_blob(user_info_handle, infoKey, (void *)userSettings, userInfoSize));
     ESP_ERROR_CHECK(nvs_commit(user_info_handle));
 }
+
+void erase_user_info(void)
+{
+    ESP_ERROR_CHECK(nvs_flash_erase_partition(PARTITION_NAME));
+}

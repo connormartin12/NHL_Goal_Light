@@ -112,7 +112,7 @@ void app_main(void)
     switch (result)
     {
         case ESP_ERR_NVS_NOT_FOUND:
-            ESP_LOGE(NVS_TAG, "User info not set yet");
+            ESP_LOGW(NVS_TAG, "User info not set yet");
             memcpy(userInfo.delay, defaultDelay, sizeof(&defaultDelay));
             request_user_info();
             break;

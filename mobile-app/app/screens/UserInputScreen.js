@@ -35,6 +35,7 @@ function UserInputScreen( {navigation} ) {
         espSSID,
         espTeam,
         requestPermissions,
+        resetDevice,
         scanForPeripherals,
         writeData,
     } = useBLE();
@@ -155,6 +156,8 @@ function UserInputScreen( {navigation} ) {
                 </Pressable>
                 <AdditionalSettingsModal 
                     closeModal={hideModal}
+                    disconnectFromPeripheral={disconnectFromDevice}
+                    resetPeripheral={resetDevice}
                     visible={settingsModalVisible}
                 />
                 <SubmitButton 

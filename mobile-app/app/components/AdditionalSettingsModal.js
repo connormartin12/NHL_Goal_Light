@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, Modal, StyleSheet, View } from 'react-native';
+import { useFormikContext } from 'formik';
 
 import AppButton from './AppButton';
 import colors from '../config/colors';
 import Screen from './Screen';
 
 function AdditionalSettingsModal(props) {
-    const { closeModal, visible } = props;
+    const { closeModal, disconnectFromPeripheral, resetPeripheral, visible } = props;
+    const { resetForm } = useFormikContext();
 
-    const reset = () => {
-
-    };
+    const resetAndCloseModal = useCallback(() => {
+        resetPeripheral();
+        disconnectFromPeripheral();
+        closeModal();
+        resetForm();
+    }, [closeModal, disconnectFromPeripheral, resetForm, resetPeripheral]);
 
     return (
         <Modal
@@ -23,7 +28,7 @@ function AdditionalSettingsModal(props) {
                 <Button title="Close" onPress={closeModal} />
                 <AppButton 
                     color="red"
-                    onPress={reset}
+                    onPress={resetAndCloseModal}
                     title="Reset Device"
                     width={300} />
             </Screen>

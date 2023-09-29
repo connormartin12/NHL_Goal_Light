@@ -21,6 +21,7 @@
 #define PASSWORD_CHR   0xFF02
 #define TEAM_CHR       0xFF03
 #define DELAY_CHR      0xFF04
+#define RESET_CHR      0xFF05
 
 EventGroupHandle_t eventGroup;
 #define SSID_BIT     BIT2
@@ -133,6 +134,24 @@ static int user_delay_readWrite(uint16_t conn_handle, uint16_t attr_handle, stru
     return 0;
 }
 
+static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    char incoming_message[6];
+    incoming_message[ctxt->om->om_len] = '\x0';
+    memcpy(incoming_message, ctxt->om->om_data, ctxt->om->om_len);
+    printf("Incoming message: %s\n", incoming_message);
+    if (strcmp(incoming_message, "reset") == 0) {
+        erase_user_info();
+        ESP_LOGW(TAG, "Restarting in 3 seconds");
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
+        esp_restart();
+    }
+    else
+        ESP_LOGE(TAG, "user_delay_readWrite Failed!");
+
+    return 0;
+}
+
 static const struct ble_gatt_svc_def gatt_svcs[] = {
     {
         .type = BLE_GATT_SVC_TYPE_PRIMARY,
@@ -158,6 +177,11 @@ static const struct ble_gatt_svc_def gatt_svcs[] = {
                 .uuid = BLE_UUID16_DECLARE(DELAY_CHR),
                 .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
                 .access_cb = user_delay_readWrite
+            },
+            {
+                .uuid = BLE_UUID16_DECLARE(RESET_CHR),
+                .flags = BLE_GATT_CHR_F_WRITE,
+                .access_cb = reset_device
             },
             {0}
         }

@@ -9,6 +9,7 @@ const ESP32_SSID = "FF01";
 const ESP32_PASSWORD = "FF02";
 const ESP32_TEAM = "FF03";
 const ESP32_DELAY = "FF04";
+const ESP32_RESET = "FF05";
 
 /* The characteristic values read from the esp32 are strings in a null terminated
    format. This function determines where the null termination is so the string value
@@ -112,24 +113,37 @@ function useBLE() {
         if (connectedDevice) {
             connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_SSID, SSID)
                 .then(() => {
-                    console.log("SSID Written")
-                })
+                    console.log("SSID Written");
+                });
             connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_PASSWORD, Password)
                 .then(() => {
-                    console.log("Password Written")
-                })
+                    console.log("Password Written");
+                });
             connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_TEAM, Team)
                 .then(() => {
-                    console.log("Team Written")
-                })
+                    console.log("Team Written");
+                });
             connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_DELAY, Delay)
                 .then(() => {
-                    console.log("Delay Written")
+                    console.log("Delay Written");
+                });
+        } else {
+            console.log("No device connected");
+        }
+    };
+
+    const resetDevice = async () => {
+        const ResetInstruction = base64.encode("reset");
+
+        if (connectedDevice) {
+            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_RESET, ResetInstruction)
+                .then(() => {
+                    console.log("Reset Instruction Written")
                 })
         } else {
             console.log("No device connected");
         }
-    }
+    };
 
     const disconnectFromDevice = () => {
         if (connectedDevice) {
@@ -154,6 +168,7 @@ function useBLE() {
         espSSID,
         espTeam,
         requestPermissions,
+        resetDevice,
         scanForPeripherals,
         writeData,
     };

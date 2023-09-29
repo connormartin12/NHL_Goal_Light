@@ -15,5 +15,6 @@ typedef struct user_info_struct {
 
 esp_err_t get_stored_info(User_Info *userSettings);
 void store_user_info(User_Info *userSettings);
+void erase_user_info(void);
 
 #endif
