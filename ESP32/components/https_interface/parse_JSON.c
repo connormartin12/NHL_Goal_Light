@@ -18,6 +18,7 @@ int user_team_score = 0;
 int other_team_score = 0;
 bool init_teams = true;
 bool init_score = true;
+bool game_found = false;
 bool scored = false;
 
 cJSON *home_team_id = NULL;
@@ -76,6 +77,8 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
         if (strcmp(home_team_name->valuestring, user_team_name) == 0 || 
             strcmp(away_team_name->valuestring, user_team_name) == 0)
         {
+            game_found = true;
+
             cJSON *home_team_score = cJSON_GetObjectItemCaseSensitive(home_team, "score");
             cJSON *away_team_score = cJSON_GetObjectItemCaseSensitive(away_team, "score");
             int home_score = home_team_score->valueint;
@@ -115,6 +118,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
     }
 
     ESP_LOGE(TAG, "No game found");
+    game_found = false;
     goto end;
 
 end:

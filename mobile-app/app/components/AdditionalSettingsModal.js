@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Button, Modal, StyleSheet, View } from 'react-native';
+import { Alert, Button, Modal, StyleSheet } from 'react-native';
 import { useFormikContext } from 'formik';
 
 import AppButton from './AppButton';
@@ -11,10 +11,20 @@ function AdditionalSettingsModal(props) {
     const { resetForm } = useFormikContext();
 
     const resetAndCloseModal = useCallback(() => {
-        resetPeripheral();
-        disconnectFromPeripheral();
-        closeModal();
-        resetForm();
+        Alert.alert('Reset Goal Light', 'Are you sure you want to reset your goal light?', [
+            {
+                text: 'Reset Device',
+                onPress: () => {
+                    resetPeripheral();
+                    disconnectFromPeripheral();
+                    closeModal();
+                    resetForm();
+                }
+            },
+            {
+                text: 'Cancel',
+            }
+        ]);
     }, [closeModal, disconnectFromPeripheral, resetForm, resetPeripheral]);
 
     return (

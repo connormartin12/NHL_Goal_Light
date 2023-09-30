@@ -85,14 +85,19 @@ void get_score(void *params)
         https_get_score(userInfo.team_name);
         if (scored == true)
             goal_scored();
-        if (init_abbr == true) {
-            https_get_abbr(user_team_id);
-            https_get_abbr(other_team_id);
-            init_abbr = false;
-        }
-        update_oled_score();
+        if (game_found == true) {
+            if (init_abbr == true) {
+                https_get_abbr(user_team_id);
+                https_get_abbr(other_team_id);
+                init_abbr = false;
+            }
+            update_oled_score();
 
-        printf("%s: %d\n%s: %d\n", user_team_abbr, user_team_score, other_team_abbr, other_team_score);
+            printf("%s: %d\n%s: %d\n", user_team_abbr, user_team_score, other_team_abbr, other_team_score);
+        } else {
+            const char *no_game_found_text = ("No game found.");
+            set_oled_text(no_game_found_text);
+        }
 
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
