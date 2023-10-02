@@ -42,10 +42,13 @@ static int user_ssid_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
             return 0;
 
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
-            memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
-            info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
-            printf("Incoming message: %s\n", info_buffer->wifi_ssid);
-            xEventGroupSetBits(eventGroup, SSID_BIT);
+            if (ctxt->om->om_len < 35) {
+                memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
+                info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
+                printf("Incoming message: %s\n", info_buffer->wifi_ssid);
+                xEventGroupSetBits(eventGroup, SSID_BIT);
+            } else
+                ESP_LOGW(TAG, "Attempted to write wifi SSID longer than allowed leength");
             return 0;
 
         default:
@@ -63,10 +66,13 @@ static int user_password_readWrite(uint16_t conn_handle, uint16_t attr_handle, s
             return 0;
 
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
-            memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
-            info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
-            printf("Incoming message: %s\n", info_buffer->wifi_password);
-            xEventGroupSetBits(eventGroup, PASSWORD_BIT);
+            if (ctxt->om->om_len < 65) {
+                memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
+                info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
+                printf("Incoming message: %s\n", info_buffer->wifi_password);
+                xEventGroupSetBits(eventGroup, PASSWORD_BIT);
+            } else 
+                ESP_LOGW(TAG, "Attempted to write wifi password longer than allowed length");
             return 0;
 
         default:
@@ -84,26 +90,29 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
             return 0;
 
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
-            memcpy(info_buffer->team, ctxt->om->om_data, ctxt->om->om_len);
-            info_buffer->team[ctxt->om->om_len] = '\x0';
+            if (ctxt->om->om_len < 50) {
+                memcpy(info_buffer->team, ctxt->om->om_data, ctxt->om->om_len);
+                info_buffer->team[ctxt->om->om_len] = '\x0';
 
-            cJSON *team_object = cJSON_Parse(info_buffer->team);
-            if (team_object == NULL)
-            {
-                const char *err = cJSON_GetErrorPtr();
-                if (err)
+                cJSON *team_object = cJSON_Parse(info_buffer->team);
+                if (team_object == NULL)
                 {
-                    ESP_LOGE(TAG, "Error parsing json before %s", err);
-                    return 1;
+                    const char *err = cJSON_GetErrorPtr();
+                    if (err)
+                    {
+                        ESP_LOGE(TAG, "Error parsing json before %s", err);
+                        return 1;
+                    }
                 }
-            }
 
-            cJSON *team_name = cJSON_GetObjectItemCaseSensitive(team_object, "name");
-            memcpy(info_buffer->team_name, team_name->valuestring, strlen(team_name->valuestring));
+                cJSON *team_name = cJSON_GetObjectItemCaseSensitive(team_object, "name");
+                memcpy(info_buffer->team_name, team_name->valuestring, strlen(team_name->valuestring));
 
-            printf("Incoming message: %s\n", info_buffer->team);
-            printf("Incoming message: %s\n", info_buffer->team_name);
-            xEventGroupSetBits(eventGroup, TEAM_BIT);
+                printf("Incoming message: %s\n", info_buffer->team);
+                printf("Incoming message: %s\n", info_buffer->team_name);
+                xEventGroupSetBits(eventGroup, TEAM_BIT);
+            } else
+                ESP_LOGW(TAG, "Attempted to write team object longer than allowed length");
             return 0;
 
         default:
@@ -121,10 +130,13 @@ static int user_delay_readWrite(uint16_t conn_handle, uint16_t attr_handle, stru
             return 0;
 
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
-            memcpy(info_buffer->delay, ctxt->om->om_data, ctxt->om->om_len);
-            info_buffer->delay[ctxt->om->om_len] = '\x0';
-            printf("Incoming message: %s\n", info_buffer->delay);
-            xEventGroupSetBits(eventGroup, DELAY_BIT);
+            if (ctxt->om->om_len < 5) {
+                memcpy(info_buffer->delay, ctxt->om->om_data, ctxt->om->om_len);
+                info_buffer->delay[ctxt->om->om_len] = '\x0';
+                printf("Incoming message: %s\n", info_buffer->delay);
+                xEventGroupSetBits(eventGroup, DELAY_BIT);
+            } else 
+                ESP_LOGW(TAG, "Attempted to write delay value longer than allowed length");
             return 0;
 
         default:
@@ -149,7 +161,7 @@ static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_g
         esp_restart();
     }
     else
-        ESP_LOGE(TAG, "user_delay_readWrite Failed!");
+        ESP_LOGE(TAG, "reset_device Failed!");
 
     return 0;
 }
