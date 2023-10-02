@@ -1,6 +1,7 @@
 #include "bluetooth.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
@@ -23,11 +24,13 @@
 #define DELAY_CHR      0xFF04
 #define RESET_CHR      0xFF05
 
-EventGroupHandle_t eventGroup;
+EventGroupHandle_t infoEventGroup;
 #define SSID_BIT     BIT2
 #define PASSWORD_BIT BIT3
 #define TEAM_BIT     BIT4
 #define DELAY_BIT    BIT5
+
+bool reset = false;
 
 User_Info *info_buffer;
 uint8_t ble_addr_type;
@@ -46,7 +49,7 @@ static int user_ssid_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
                 memcpy(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len);
                 info_buffer->wifi_ssid[ctxt->om->om_len] = '\x0';
                 printf("Incoming message: %s\n", info_buffer->wifi_ssid);
-                xEventGroupSetBits(eventGroup, SSID_BIT);
+                xEventGroupSetBits(infoEventGroup, SSID_BIT);
             } else
                 ESP_LOGW(TAG, "Attempted to write wifi SSID longer than allowed leength");
             return 0;
@@ -70,7 +73,7 @@ static int user_password_readWrite(uint16_t conn_handle, uint16_t attr_handle, s
                 memcpy(info_buffer->wifi_password, ctxt->om->om_data, ctxt->om->om_len);
                 info_buffer->wifi_password[ctxt->om->om_len] = '\x0';
                 printf("Incoming message: %s\n", info_buffer->wifi_password);
-                xEventGroupSetBits(eventGroup, PASSWORD_BIT);
+                xEventGroupSetBits(infoEventGroup, PASSWORD_BIT);
             } else 
                 ESP_LOGW(TAG, "Attempted to write wifi password longer than allowed length");
             return 0;
@@ -110,7 +113,7 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
 
                 printf("Incoming message: %s\n", info_buffer->team);
                 printf("Incoming message: %s\n", info_buffer->team_name);
-                xEventGroupSetBits(eventGroup, TEAM_BIT);
+                xEventGroupSetBits(infoEventGroup, TEAM_BIT);
             } else
                 ESP_LOGW(TAG, "Attempted to write team object longer than allowed length");
             return 0;
@@ -134,7 +137,7 @@ static int user_delay_readWrite(uint16_t conn_handle, uint16_t attr_handle, stru
                 memcpy(info_buffer->delay, ctxt->om->om_data, ctxt->om->om_len);
                 info_buffer->delay[ctxt->om->om_len] = '\x0';
                 printf("Incoming message: %s\n", info_buffer->delay);
-                xEventGroupSetBits(eventGroup, DELAY_BIT);
+                xEventGroupSetBits(infoEventGroup, DELAY_BIT);
             } else 
                 ESP_LOGW(TAG, "Attempted to write delay value longer than allowed length");
             return 0;
@@ -153,12 +156,8 @@ static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_g
     memcpy(incoming_message, ctxt->om->om_data, ctxt->om->om_len);
     printf("Incoming message: %s\n", incoming_message);
     if (strcmp(incoming_message, "reset") == 0) {
-        erase_user_info();
-        const char *reset_text = "Resetting device in 3 seconds. . .";
-        set_oled_text(reset_text);
-        ESP_LOGW(TAG, "Restarting in 3 seconds");
-        vTaskDelay(3000 / portTICK_PERIOD_MS);
-        esp_restart();
+        reset = true;
+        xEventGroupSetBits(infoEventGroup, SSID_BIT | PASSWORD_BIT | TEAM_BIT | DELAY_BIT);
     }
     else
         ESP_LOGE(TAG, "reset_device Failed!");
@@ -297,10 +296,14 @@ void stop_ble()
 
 esp_err_t all_values_set()
 {
-    eventGroup = xEventGroupCreate();
-    EventBits_t bits = xEventGroupWaitBits(eventGroup, SSID_BIT | PASSWORD_BIT | TEAM_BIT | DELAY_BIT, true, true, portMAX_DELAY);
-    if (bits)
-        return ESP_OK;
+    infoEventGroup = xEventGroupCreate();
+    EventBits_t info_bits = xEventGroupWaitBits(infoEventGroup, SSID_BIT | PASSWORD_BIT | TEAM_BIT | DELAY_BIT, true, true, portMAX_DELAY);
+    if (info_bits) {
+        if (reset)
+            return ESP_ERR_NOT_FOUND;
+        else
+            return ESP_OK;
+    }
     else {
         ESP_LOGE(TAG, "UNEXPECTED ERROR GETTING USER INFO BITS");
         return ESP_FAIL;

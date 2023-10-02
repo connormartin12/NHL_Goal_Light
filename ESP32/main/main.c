@@ -18,6 +18,7 @@
 #define NVS_TAG "NVS"
 #define OTA_TAG "OTA"
 #define WIFI_TAG "WiFi"
+#define BLE_TAG "BLE"
 #define LED_PIN 38
 #define BLE_PIN 39
 
@@ -31,11 +32,24 @@ void request_user_info()
 {
     run_ble(&userInfo);
     esp_err_t err = all_values_set();
-    if (err) {
-        ESP_ERROR_CHECK(all_values_set());
+    switch (err) {
+        case ESP_FAIL:
+            ESP_ERROR_CHECK(all_values_set());
+            break;
+        case ESP_ERR_NOT_FOUND:
+            stop_ble();
+            erase_user_info();
+            const char *reset_text = "Resetting device in 3 seconds. . .";
+            set_oled_text(reset_text);
+            ESP_LOGW(BLE_TAG, "Restarting in 3 seconds");
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+            esp_restart();
+            break;
+        default:
+            stop_ble();
+            store_user_info(&userInfo);
+            break;
     }
-    stop_ble();
-    store_user_info(&userInfo);
 }
 
 static void IRAM_ATTR gpio_isr_handler(void *args)

@@ -32,6 +32,9 @@
         "esp_heap_caps.h": "c",
         "https_interface.h": "c",
         "parse_json.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "bitset": "c",
+        "memory": "c",
+        "random": "c"
     }
 }

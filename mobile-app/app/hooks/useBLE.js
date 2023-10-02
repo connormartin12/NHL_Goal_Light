@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { BleError, BleManager, Characteristic, Device } from 'react-native-ble-plx';
+import { BleManager } from 'react-native-ble-plx';
 import base64 from 'react-native-base64';
 
 import teams from '../config/teams';
@@ -138,8 +138,8 @@ function useBLE() {
         if (connectedDevice) {
             connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_RESET, ResetInstruction)
                 .then(() => {
-                    console.log("Reset Instruction Written")
-                })
+                    console.log("Reset Instruction Written");
+                });
         } else {
             console.log("No device connected");
         }
