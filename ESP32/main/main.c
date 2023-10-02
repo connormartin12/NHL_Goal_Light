@@ -36,7 +36,7 @@ void request_user_info()
         case ESP_FAIL:
             ESP_ERROR_CHECK(all_values_set());
             break;
-        case ESP_ERR_NOT_FOUND:
+        case ESP_RESET:
             stop_ble();
             erase_user_info();
             const char *reset_text = "Resetting device in 3 seconds. . .";

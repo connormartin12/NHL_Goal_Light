@@ -300,7 +300,7 @@ esp_err_t all_values_set()
     EventBits_t info_bits = xEventGroupWaitBits(infoEventGroup, SSID_BIT | PASSWORD_BIT | TEAM_BIT | DELAY_BIT, true, true, portMAX_DELAY);
     if (info_bits) {
         if (reset)
-            return ESP_ERR_NOT_FOUND;
+            return ESP_RESET;
         else
             return ESP_OK;
     }
