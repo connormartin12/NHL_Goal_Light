@@ -63,6 +63,7 @@ void request_user_info(void)
                 stop_ble();
                 store_user_info(&userInfo);
                 delay = atoi(userInfo.delay);
+                init_score = true;
                 break;
         }
 

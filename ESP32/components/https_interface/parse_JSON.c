@@ -16,7 +16,6 @@ int user_team_id = 0;
 int other_team_id = 0;
 int user_team_score = 0;
 int other_team_score = 0;
-bool init_teams = true;
 bool init_score = true;
 bool game_found = false;
 bool scored = false;
@@ -24,7 +23,7 @@ bool scored = false;
 cJSON *home_team_id = NULL;
 cJSON *away_team_id = NULL;
 
-void set_abbr(const cJSON * const home_team_info, const cJSON * const away_team_info)
+void set_abbr_id(const cJSON * const home_team_info, const cJSON * const away_team_info)
 {
     init_score = false;
     init_abbr = true;
@@ -87,7 +86,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
             if (strcmp(home_team_name->valuestring, user_team_name) == 0)
             {
                 if (init_score) { // If this is first time getting score, it will not set off goal_scored function
-                    set_abbr(home_team_info, away_team_info);
+                    set_abbr_id(home_team_info, away_team_info);
                     
                     user_team_id = home_team_id->valueint;
                     other_team_id = away_team_id->valueint;
@@ -101,7 +100,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
             else
             {
                 if (init_score) {
-                    set_abbr(home_team_info, away_team_info);
+                    set_abbr_id(home_team_info, away_team_info);
 
                     user_team_id = away_team_id->valueint;
                     other_team_id = home_team_id->valueint;
