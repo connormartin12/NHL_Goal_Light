@@ -110,6 +110,7 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
 
                 cJSON *team_name = cJSON_GetObjectItemCaseSensitive(team_object, "name");
                 memcpy(info_buffer->team_name, team_name->valuestring, strlen(team_name->valuestring));
+                info_buffer->team_name[strlen(team_name->valuestring)] = '\x0';
 
                 printf("Incoming message: %s\n", info_buffer->team);
                 printf("Incoming message: %s\n", info_buffer->team_name);

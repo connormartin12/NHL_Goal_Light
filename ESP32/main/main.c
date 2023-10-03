@@ -24,31 +24,50 @@
 
 static TaskHandle_t score_task = NULL;
 QueueHandle_t interruptQueue;
+esp_err_t retry;
 
 User_Info userInfo;
 char *defaultDelay = "30";
+int delay;
 
-void request_user_info()
+void connect_to_wifi(void)
 {
-    run_ble(&userInfo);
-    esp_err_t err = all_values_set();
-    switch (err) {
-        case ESP_FAIL:
-            ESP_ERROR_CHECK(all_values_set());
-            break;
-        case ESP_RESET:
-            stop_ble();
-            erase_user_info();
-            const char *reset_text = "Resetting device in 3 seconds. . .";
-            set_oled_text(reset_text);
-            ESP_LOGW(BLE_TAG, "Restarting in 3 seconds");
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
-            esp_restart();
-            break;
-        default:
-            stop_ble();
-            store_user_info(&userInfo);
-            break;
+    const char *wifi_connecting_text = ("Connecting to wifi. . .");
+    set_oled_text(wifi_connecting_text);
+    retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
+}
+
+/* Anytime the user inputs new info, the wifi connection will disconnect and reconnect */
+void request_user_info(void)
+{
+    retry = ESP_FAIL;
+    while (retry != ESP_OK) {
+        wifi_disconnect();
+
+        run_ble(&userInfo);
+        esp_err_t check = all_values_set();
+        switch (check) {
+            case ESP_FAIL:
+                ESP_ERROR_CHECK(all_values_set());
+                break;
+            case ESP_RESET:
+                stop_ble();
+                erase_user_info();
+                const char *reset_text = "Resetting device in 3 seconds. . .";
+                set_oled_text(reset_text);
+                ESP_LOGW(BLE_TAG, "Restarting in 3 seconds");
+                vTaskDelay(3000 / portTICK_PERIOD_MS);
+                esp_restart();
+                break;
+            default:
+                stop_ble();
+                store_user_info(&userInfo);
+                delay = atoi(userInfo.delay);
+                break;
+        }
+
+        // If new ssid/password disconnect and reconnect, otherwise ESP_OK
+        connect_to_wifi();
     }
 }
 
@@ -84,7 +103,7 @@ void button_pushed_task(void *params)
 // DO NOT RUN OTHER TASKS WHILE THIS FUNCTION IS RUNNING. RESULTS IN AUDIO GLITCHES
 void goal_scored(void)
 {
-    // vTaskDelay((userInfo.delay*1000) / portTICK_PERIOD_MS);
+    vTaskDelay((delay * 1000) / portTICK_PERIOD_MS);
     const char *team_scored_text = "Dallas Stars Score!!!";
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
@@ -124,6 +143,18 @@ void app_main(void)
     audio_init();
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
+    // Initialize flash
+    retry = nvs_flash_init();
+    if (retry == ESP_ERR_NVS_NO_FREE_PAGES || ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        retry = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(retry);
+
+    // Initialize wifi
+    wifi_init();
+
     // Checks for first time device use. If device has never been used before, it will immediately enter ble mode to request user input.
     const char *stored_info_text = ("Looking for stored settings. . .");
     set_oled_text(stored_info_text);
@@ -143,26 +174,10 @@ void app_main(void)
             break;
     }
 
-    esp_err_t retry = nvs_flash_init();
-    if (retry == ESP_ERR_NVS_NO_FREE_PAGES || ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        retry = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(retry);
-
-    wifi_init();
-
     // If ESP32 cannot connect to the wifi, it should keep returning to ble mode to request correct wifi credentials from the user.
-    const char *wifi_connecting_text = ("Connecting to wifi. . .");
-    set_oled_text(wifi_connecting_text);
-    retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
-    while (retry != ESP_OK) {
-        wifi_disconnect();
+    connect_to_wifi();
+    if (retry != ESP_OK) 
         request_user_info();
-        set_oled_text(wifi_connecting_text);
-        retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
-    }
 
     // Check for software updates
     esp_err_t err = run_ota();
