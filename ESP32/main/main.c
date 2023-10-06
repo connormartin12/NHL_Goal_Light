@@ -180,16 +180,14 @@ void app_main(void)
             break;
         case ESP_OK:
             ESP_LOGI(NVS_TAG, "User info found");
+            connect_to_wifi();
+            if (retry != ESP_OK) 
+                request_user_info();
             break;
         default:
             ESP_LOGE(NVS_TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(result));
             break;
     }
-
-    // If ESP32 cannot connect to the wifi, it should keep returning to ble mode to request correct wifi credentials from the user.
-    connect_to_wifi();
-    if (retry != ESP_OK) 
-        request_user_info();
 
     // Check for software updates
     esp_err_t err = run_ota();
