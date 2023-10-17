@@ -206,7 +206,5 @@ void app_main(void)
     gpio_install_isr_service(0);
     gpio_isr_handler_add(BLE_PIN, gpio_isr_handler, (void *)BLE_PIN);
 
-    /* REMOVE FOLLOWING LINE OF CODE WHEN FINISHED TESTING LIVE GAME*/
-    // goal_scored();
     xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);   
 }
