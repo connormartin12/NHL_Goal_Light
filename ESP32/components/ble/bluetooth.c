@@ -302,8 +302,11 @@ esp_err_t all_values_set()
     if (info_bits) {
         if (reset)
             return ESP_RESET;
-        else
+        else {
+            const char save_user_info_text = "Saving user info. . .";
+            set_oled_text(save_user_info_text);
             return ESP_OK;
+        }
     }
     else {
         ESP_LOGE(TAG, "UNEXPECTED ERROR GETTING USER INFO BITS");
