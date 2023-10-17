@@ -41,7 +41,7 @@ void connect_to_wifi(void)
     retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
 }
 
-/* Anytime the user inputs new info, the wifi will disconnect and reconnect */
+// Anytime the user inputs new info, the wifi will disconnect and reconnect
 void request_user_info(void)
 {
     retry = ESP_FAIL;
