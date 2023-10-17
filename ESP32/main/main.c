@@ -15,13 +15,13 @@
 #include "ota.h"
 #include "wifi.h"
 
-#define BLE_TAG "BLE"
-#define NVS_TAG "NVS"
-#define OTA_TAG "OTA"
-#define RTOS_TAG "RTOS"
-#define WIFI_TAG "WiFi"
-#define LED_PIN 38
-#define BLE_PIN 39
+#define BLE_TAG     "BLE"
+#define NVS_TAG     "NVS"
+#define OTA_TAG     "OTA"
+#define RTOS_TAG    "RTOS"
+#define WIFI_TAG    "WiFi"
+#define LED_PIN     38
+#define BLE_PIN     39
 
 static TaskHandle_t score_task = NULL;
 static TaskHandle_t interrupt_task = NULL;
@@ -36,7 +36,7 @@ bool receiver_waiting = false;
 void connect_to_wifi(void)
 {
     wifi_disconnect();
-    const char *wifi_connecting_text = ("Connecting to wifi. . .");
+    const char *wifi_connecting_text = "Connecting to wifi. . .";
     set_oled_text(wifi_connecting_text);
     retry = wifi_connect_sta(userInfo.wifi_ssid, userInfo.wifi_password);
 }
