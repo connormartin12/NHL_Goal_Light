@@ -303,7 +303,7 @@ esp_err_t all_values_set()
         if (reset)
             return ESP_RESET;
         else {
-            const char save_user_info_text = "Saving user info. . .";
+            const char *save_user_info_text = "Saving user info. . .";
             set_oled_text(save_user_info_text);
             return ESP_OK;
         }

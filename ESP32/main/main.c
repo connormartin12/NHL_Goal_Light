@@ -111,7 +111,12 @@ void button_pushed_task(void *params)
 void goal_scored(void)
 {
     vTaskDelay((delay * 1000) / portTICK_PERIOD_MS);
-    const char *team_scored_text = "Dallas Stars Score!!!";
+
+    size_t text_size = snprintf(NULL, 0, "%s Score!!!", userInfo.team_name);
+    char *buffer = malloc(text_size);
+    sprintf(buffer, "%s Score!!!", userInfo.team_name);
+    const char *team_scored_text = buffer;
+    
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
     play_wav_file();
@@ -206,5 +211,5 @@ void app_main(void)
     gpio_install_isr_service(0);
     gpio_isr_handler_add(BLE_PIN, gpio_isr_handler, (void *)BLE_PIN);
 
-    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);   
+    xTaskCreate(&get_score, "Retrieve Score", 10000, NULL, 1, &score_task);
 }
