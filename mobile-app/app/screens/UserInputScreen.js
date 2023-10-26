@@ -149,7 +149,7 @@ function UserInputScreen( {navigation} ) {
                     width={inputFieldWidth}
                 />
                 <Pressable 
-                    // disabled={connectedDevice? false : true} 
+                    disabled={connectedDevice? false : true} 
                     onPress={additionalSettingsModal}
                     style={styles.additionalSettings}
                 >
