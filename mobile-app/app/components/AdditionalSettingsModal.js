@@ -5,9 +5,13 @@ import { useFormikContext } from 'formik';
 import AppButton from './AppButton';
 import colors from '../config/colors';
 import Screen from './Screen';
+import VolumeSelectionComponent from './VolumeSelectionComponent';
+import AppText from './AppText';
+
+const maxScreenWidth = 300;
 
 function AdditionalSettingsModal(props) {
-    const { closeModal, disconnectFromPeripheral, resetPeripheral, visible } = props;
+    const { closeModal, disconnectFromPeripheral, resetPeripheral, sendVolumeSetting, visible } = props;
     const { resetForm } = useFormikContext();
 
     const resetAndCloseModal = useCallback(() => {
@@ -36,11 +40,16 @@ function AdditionalSettingsModal(props) {
         >
             <Screen style={styles.modalContainer}>
                 <Button title="Close" onPress={closeModal} />
+                <AppText style={styles.sectionHeader}>Audio Settings</AppText>
+                <VolumeSelectionComponent 
+                    sendVolumeSetting={sendVolumeSetting}
+                    width={maxScreenWidth}/>
                 <AppButton 
                     color="red"
                     onPress={resetAndCloseModal}
                     title="Reset Device"
-                    width={300} />
+                    width={maxScreenWidth} 
+                />
             </Screen>
         </Modal>
     );
@@ -50,6 +59,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.inputBackground,
+    },
+    sectionHeader: {
+        fontSize: 24,
+        fontWeight: '700',
+        alignSelf: 'flex-start',
     },
     modalContainer: {
         alignItems: 'center',

@@ -11,6 +11,7 @@ typedef struct user_info_struct {
     char team[50]; // Maximum NHL team length is 39 characters adding 11 characters for safety
     char team_name[40]; // Just team name, no additonal JSON data
     char delay[5]; // Maximum delay value possible would be 3 digits at most
+    char volume[7]; // Maximum value would be "medium"
 } User_Info;
 
 esp_err_t get_stored_info(User_Info *userSettings);

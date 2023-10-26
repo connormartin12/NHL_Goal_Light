@@ -29,7 +29,8 @@ QueueHandle_t interruptQueue;
 esp_err_t retry;
 
 User_Info userInfo;
-char *defaultDelay = "30";
+const char *defaultDelay = "30";
+const char *defaultVolume = "medium";
 int delay;
 bool receiver_waiting = false;
 
@@ -119,7 +120,7 @@ void goal_scored(void)
 
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
-    play_wav_file();
+    play_wav_file(userInfo.volume);
     gpio_set_level(LED_PIN, 0);
 }
 
@@ -180,7 +181,8 @@ void app_main(void)
     {
         case ESP_ERR_NVS_NOT_FOUND:
             ESP_LOGW(NVS_TAG, "User info not set yet");
-            memcpy(userInfo.delay, defaultDelay, sizeof(&defaultDelay));
+            memcpy(userInfo.delay, defaultDelay, strlen(defaultDelay));
+            memcpy(userInfo.volume, defaultVolume, strlen(defaultVolume));
             request_user_info();
             break;
         case ESP_OK:

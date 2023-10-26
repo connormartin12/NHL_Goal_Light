@@ -37,6 +37,7 @@ function UserInputScreen( {navigation} ) {
         requestPermissions,
         resetDevice,
         scanForPeripherals,
+        sendVolumeSetting,
         writeData,
     } = useBLE();
 
@@ -148,7 +149,7 @@ function UserInputScreen( {navigation} ) {
                     width={inputFieldWidth}
                 />
                 <Pressable 
-                    disabled={connectedDevice? false : true} 
+                    // disabled={connectedDevice? false : true} 
                     onPress={additionalSettingsModal}
                     style={styles.additionalSettings}
                 >
@@ -158,10 +159,11 @@ function UserInputScreen( {navigation} ) {
                     closeModal={hideModal}
                     disconnectFromPeripheral={disconnectFromDevice}
                     resetPeripheral={resetDevice}
+                    sendVolumeSetting={sendVolumeSetting}
                     visible={settingsModalVisible}
                 />
                 <SubmitButton 
-                    title="Submit" 
+                    title="Save Settings" 
                     width={inputFieldWidth} 
                     disabled={connectedDevice? false : true}
                 />

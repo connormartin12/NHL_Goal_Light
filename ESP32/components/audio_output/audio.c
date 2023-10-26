@@ -1,9 +1,11 @@
 #include "audio.h"
 #include <stdio.h>
+#include <string.h>
 #include "driver/i2s_std.h"
 #include "esp_log.h"
 #include "esp_littlefs.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #define AUDIO_BUFFER    2048
     
@@ -63,7 +65,7 @@ esp_err_t audio_init(void)
     return i2s_channel_init_std_mode(tx_handle, &std_cfg);
 }
 
-esp_err_t play_wav_file(void)
+esp_err_t play_wav_file(char *volume_selection)
 {
     FILE *fh = fopen("/littlefs/DallasStars.wav", "rb");
     if (fh == NULL)
@@ -79,6 +81,27 @@ esp_err_t play_wav_file(void)
     int16_t *buf = calloc(AUDIO_BUFFER, sizeof(int16_t));
     size_t bytes_read = 0;
     size_t bytes_written = 0;
+    float signed_sample;
+    float volume;
+
+    // Set volume level
+    if (strcmp(volume_selection, "Off") == 0) {
+        printf("Volume: off\n");
+        vTaskDelay(8000 / portTICK_PERIOD_MS);
+        return ESP_OK;
+    }
+    else if (strcmp(volume_selection, "Low") == 0) {
+        volume = 0.000001;
+        printf("Volume: low\n");
+    }
+    else if (strcmp(volume_selection, "High") == 0) {
+        volume = 1;
+        printf("Volume: high\n");
+    }
+    else {
+        volume = 0.5;
+        ESP_LOGE(TAG, "No Volume Level Found");
+    }
 
     bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
 
@@ -86,9 +109,17 @@ esp_err_t play_wav_file(void)
 
     while (bytes_read > 0)
     {
-    // write the buffer to the i2s
-    i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
-    bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
+        // Adjust audio file based on volume setting
+        for (int i = 0; i < bytes_read; i += 2)
+        {
+            signed_sample = *((int16_t *)(buf + i));
+            signed_sample = signed_sample * volume;
+            *((int16_t *)(buf + i)) = signed_sample;
+        }
+
+        // write the buffer to the i2s
+        i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
+        bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
     }
 
     i2s_channel_disable(tx_handle);

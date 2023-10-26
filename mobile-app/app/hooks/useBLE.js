@@ -9,7 +9,8 @@ const ESP32_SSID = "FF01";
 const ESP32_PASSWORD = "FF02";
 const ESP32_TEAM = "FF03";
 const ESP32_DELAY = "FF04";
-const ESP32_RESET = "FF05";
+const ESP32_VOLUME ="FF05"
+const ESP32_RESET = "FF06";
 
 /* The characteristic values read from the esp32 are strings in a null terminated
    format. This function determines where the null termination is so the string value
@@ -132,6 +133,19 @@ function useBLE() {
         }
     };
 
+    const sendVolumeSetting = async (setting) => {
+        const VolumeSetting = base64.encode(setting);
+
+        if (connectedDevice) {
+            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_VOLUME, VolumeSetting)
+                .then(() => {
+                    console.log("Volume Setting Written");
+                })
+        } else {
+            console.log("No device connected");
+        }
+    };
+
     const resetDevice = async () => {
         const ResetInstruction = base64.encode("reset");
 
@@ -170,6 +184,7 @@ function useBLE() {
         requestPermissions,
         resetDevice,
         scanForPeripherals,
+        sendVolumeSetting,
         writeData,
     };
 };

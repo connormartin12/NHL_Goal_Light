@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "../audio_output/audio.h"
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
@@ -22,7 +23,8 @@
 #define PASSWORD_CHR   0xFF02
 #define TEAM_CHR       0xFF03
 #define DELAY_CHR      0xFF04
-#define RESET_CHR      0xFF05
+#define VOLUME_CHR     0xFF05
+#define RESET_CHR      0xFF06
 
 EventGroupHandle_t infoEventGroup;
 #define SSID_BIT     BIT2
@@ -150,6 +152,39 @@ static int user_delay_readWrite(uint16_t conn_handle, uint16_t attr_handle, stru
     return 0;
 }
 
+static int user_volume_readWrite(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    switch(ctxt->op) {
+        case BLE_GATT_ACCESS_OP_READ_CHR:
+            os_mbuf_append(ctxt->om, info_buffer->volume, sizeof(info_buffer->volume));
+            return 0;
+
+        case BLE_GATT_ACCESS_OP_WRITE_CHR:
+            if (ctxt->om->om_len < 7) {
+                char volume_value[7]; 
+                memcpy(volume_value, ctxt->om->om_data, ctxt->om->om_len);
+                volume_value[ctxt->om->om_len] = '\x0';
+                printf("Incoming message: %s\n", volume_value);
+
+                if (strcmp(volume_value, "Test") == 0) {
+                    printf("Testing Volume Setting\n");
+                    play_wav_file(info_buffer->volume);
+                }
+                else {
+                    memcpy(info_buffer->volume, ctxt->om->om_data, ctxt->om->om_len);
+                    info_buffer->volume[ctxt->om->om_len] = '\x0';
+                }
+            } else 
+                ESP_LOGW(TAG, "Attempted to write volume value longer than allowed length");
+            return 0;
+
+        default:
+            ESP_LOGE(TAG, "user_volume_readWrite Failed!");
+    }
+
+    return 0;
+}
+
 static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     char incoming_message[6];
@@ -191,6 +226,11 @@ static const struct ble_gatt_svc_def gatt_svcs[] = {
                 .uuid = BLE_UUID16_DECLARE(DELAY_CHR),
                 .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
                 .access_cb = user_delay_readWrite
+            },
+            {
+                .uuid = BLE_UUID16_DECLARE(VOLUME_CHR),
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                .access_cb = user_volume_readWrite
             },
             {
                 .uuid = BLE_UUID16_DECLARE(RESET_CHR),
