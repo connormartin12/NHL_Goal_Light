@@ -11,7 +11,7 @@ import AppText from './AppText';
 const maxScreenWidth = 300;
 
 function AdditionalSettingsModal(props) {
-    const { closeModal, disconnectFromPeripheral, resetPeripheral, sendVolumeSetting, visible } = props;
+    const { closeModal, disconnectFromPeripheral, espVolume, resetPeripheral, sendVolumeSetting, visible } = props;
     const { resetForm } = useFormikContext();
 
     const resetAndCloseModal = useCallback(() => {
@@ -42,6 +42,7 @@ function AdditionalSettingsModal(props) {
                 <Button title="Close" onPress={closeModal} />
                 <AppText style={styles.sectionHeader}>Audio Settings</AppText>
                 <VolumeSelectionComponent 
+                    currentSelection={espVolume}
                     sendVolumeSetting={sendVolumeSetting}
                     width={maxScreenWidth}/>
                 <AppButton 

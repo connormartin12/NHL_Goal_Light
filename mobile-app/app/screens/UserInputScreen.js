@@ -34,6 +34,7 @@ function UserInputScreen( {navigation} ) {
         espPassword,
         espSSID,
         espTeam,
+        espVolume,
         requestPermissions,
         resetDevice,
         scanForPeripherals,
@@ -149,7 +150,7 @@ function UserInputScreen( {navigation} ) {
                     width={inputFieldWidth}
                 />
                 <Pressable 
-                    disabled={connectedDevice? false : true} 
+                    // disabled={connectedDevice? false : true} 
                     onPress={additionalSettingsModal}
                     style={styles.additionalSettings}
                 >
@@ -158,6 +159,7 @@ function UserInputScreen( {navigation} ) {
                 <AdditionalSettingsModal 
                     closeModal={hideModal}
                     disconnectFromPeripheral={disconnectFromDevice}
+                    espVolume={espVolume}
                     resetPeripheral={resetDevice}
                     sendVolumeSetting={sendVolumeSetting}
                     visible={settingsModalVisible}

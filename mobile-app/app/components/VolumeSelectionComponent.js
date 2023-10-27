@@ -7,8 +7,8 @@ import AppText from './AppText';
 
 const options = ['Off', 'Low', 'High'];
 
-function VolumeSelectionComponent({sendVolumeSetting, width}) {
-    const [selectedOption, setSelectedOption] = useState('Off');
+function VolumeSelectionComponent({currentSelection, sendVolumeSetting, width}) {
+    const [selectedOption, setSelectedOption] = useState(currentSelection);
 
     const handlePress = (mode) => {
         console.log(`Audio Setting: ${mode}`);

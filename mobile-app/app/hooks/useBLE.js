@@ -33,6 +33,7 @@ function useBLE() {
     const [espPassword, setEspPassword] = useState("");
     const [espTeam, setEspTeam] = useState(null);
     const [espDelay, setEspDelay] = useState(30);
+    const [espVolume, setEspVolume] = useState("");
     
     const requestPermissions = async () => {
         // Add code here for android permissions
@@ -99,6 +100,11 @@ function useBLE() {
                 .then((characteristic) => {
                     const decodedValue = base64.decode(characteristic.value);
                     setEspDelay(parseInt(decodedValue));
+                })
+            device.readCharacteristicForService(ESP32_UUID, ESP32_VOLUME)
+                .then((characteristic) => {
+                    const decodedValue = base64.decode(characteristic.value);
+                    setEspVolume(stringVal(decodedValue));
                 })
         } else {
             console.log("No device connected");
@@ -181,6 +187,7 @@ function useBLE() {
         espPassword,
         espSSID,
         espTeam,
+        espVolume,
         requestPermissions,
         resetDevice,
         scanForPeripherals,
