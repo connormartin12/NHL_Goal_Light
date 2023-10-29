@@ -1,10 +1,9 @@
 import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
+import SpeakerAnimation from './SpeakerAnimation';
 
-import AppText from './AppText';
-
-function SpeakerIndicator({visible = false, closeSpeakerIndicator}) {
+function AnimationIndicator({closeAnimation, visible }) {
     return (
         <Modal 
             animationType="fade"
@@ -13,16 +12,7 @@ function SpeakerIndicator({visible = false, closeSpeakerIndicator}) {
             visible={visible}
         >
             <View style={styles.modalContainer}>
-                <AppText style={styles.text}>Playing Audio</AppText>
-                <LottieView 
-                    autoPlay={true}
-                    loop={false}
-                    onAnimationFinish={closeSpeakerIndicator}
-                    source={require('../assets/animations/loading-bar.json')}
-                    style={{
-                    height: 18,
-                }}
-                />
+                <SpeakerAnimation closeSpeakerIndicator={closeAnimation} visible={visible} />
             </View>
         </Modal>
     );
@@ -45,4 +35,4 @@ const styles=StyleSheet.create({
     }
 });
 
-export default SpeakerIndicator;
+export default AnimationIndicator;

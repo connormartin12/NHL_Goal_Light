@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import AppButton from './AppButton';
-import { colors } from '../config';
 import AppText from './AppText';
-import SpeakerIndicator from './SpeakerIndicator';
+import AnimationIndicator from './Animations/AnimationIndicator';
+import { colors } from '../config';
+import SpeakerAnimation from './Animations/SpeakerAnimation';
 
 const options = ['Off', 'Low', 'High'];
 
@@ -51,9 +52,10 @@ function VolumeSelectionComponent({currentSelection, sendVolumeSetting, width}) 
                     )
                 })}
             </View>
-            <SpeakerIndicator 
+            <AnimationIndicator
+                animation={SpeakerAnimation}
+                closeAnimation={closeSpeakerIndicator}    
                 visible={speakerIndicatorVisible}
-                closeSpeakerIndicator={closeSpeakerIndicator}    
             />
             <AppButton 
                 onPress={() => {
