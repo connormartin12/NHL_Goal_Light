@@ -1,17 +1,26 @@
 #include "audio.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "driver/i2s_std.h"
 #include "esp_log.h"
 #include "esp_littlefs.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #define AUDIO_BUFFER    2048
     
 static const char *TAG = "AUDIO";
+static bool timed_out = false;
 
 i2s_chan_handle_t tx_handle;
+esp_timer_handle_t timer_handle;
+
+void timer_callback(void *args) 
+{
+    timed_out = true;
+}
 
 esp_err_t audio_init(void)
 {
@@ -65,7 +74,7 @@ esp_err_t audio_init(void)
     return i2s_channel_init_std_mode(tx_handle, &std_cfg);
 }
 
-esp_err_t play_wav_file(char *volume_selection)
+esp_err_t play_wav_file(char *volume_selection, uint8_t test)
 {
     FILE *fh = fopen("/littlefs/DallasStars.wav", "rb");
     if (fh == NULL)
@@ -87,7 +96,7 @@ esp_err_t play_wav_file(char *volume_selection)
     // Set volume level
     if (strcmp(volume_selection, "Off") == 0) {
         printf("Volume: off\n");
-        vTaskDelay(8000 / portTICK_PERIOD_MS);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
         return ESP_OK;
     }
     else if (strcmp(volume_selection, "Low") == 0) {
@@ -107,6 +116,15 @@ esp_err_t play_wav_file(char *volume_selection)
 
     i2s_channel_enable(tx_handle);
 
+    if (test == 1) {
+        const esp_timer_create_args_t esp_timer_create_args = {
+            .callback = timer_callback,
+            .name = "Speaker Timer"
+        };
+        esp_timer_create(&esp_timer_create_args, &timer_handle);
+        esp_timer_start_once(timer_handle, 2000000);
+    }
+
     while (bytes_read > 0)
     {
         // Adjust audio file based on volume setting
@@ -120,6 +138,13 @@ esp_err_t play_wav_file(char *volume_selection)
         // write the buffer to the i2s
         i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
         bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
+
+        if ((test == 1) && timed_out) {
+            esp_timer_stop(timer_handle);
+            esp_timer_delete(timer_handle);
+            timed_out = false;
+            break;
+        }
     }
 
     i2s_channel_disable(tx_handle);

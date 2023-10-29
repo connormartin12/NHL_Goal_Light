@@ -168,7 +168,7 @@ static int user_volume_readWrite(uint16_t conn_handle, uint16_t attr_handle, str
 
                 if (strcmp(volume_value, "Test") == 0) {
                     printf("Testing Volume Setting\n");
-                    play_wav_file(info_buffer->volume);
+                    play_wav_file(info_buffer->volume, 1);
                 }
                 else {
                     memcpy(info_buffer->volume, ctxt->om->om_data, ctxt->om->om_len);

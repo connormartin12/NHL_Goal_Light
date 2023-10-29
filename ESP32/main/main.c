@@ -30,7 +30,7 @@ esp_err_t retry;
 
 User_Info userInfo;
 const char *defaultDelay = "30";
-const char *defaultVolume = "medium";
+const char *defaultVolume = "Low";
 int delay;
 bool receiver_waiting = false;
 
@@ -120,7 +120,7 @@ void goal_scored(void)
 
     set_oled_text(team_scored_text);
     gpio_set_level(LED_PIN, 1);
-    play_wav_file(userInfo.volume);
+    play_wav_file(userInfo.volume, 0);
     gpio_set_level(LED_PIN, 0);
 }
 
