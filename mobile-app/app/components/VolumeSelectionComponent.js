@@ -4,11 +4,17 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import AppButton from './AppButton';
 import { colors } from '../config';
 import AppText from './AppText';
+import SpeakerIndicator from './SpeakerIndicator';
 
 const options = ['Off', 'Low', 'High'];
 
 function VolumeSelectionComponent({currentSelection, sendVolumeSetting, width}) {
     const [selectedOption, setSelectedOption] = useState(currentSelection);
+    const [speakerIndicatorVisible, setSpeakerIndicatorVisible] = useState(false);
+
+    const closeSpeakerIndicator = () => {
+        setSpeakerIndicatorVisible(false);
+    }
 
     const handlePress = (mode) => {
         console.log(`Audio Setting: ${mode}`);
@@ -45,8 +51,18 @@ function VolumeSelectionComponent({currentSelection, sendVolumeSetting, width}) 
                     )
                 })}
             </View>
+            <SpeakerIndicator 
+                visible={speakerIndicatorVisible}
+                closeSpeakerIndicator={closeSpeakerIndicator}    
+            />
             <AppButton 
-                onPress={() => handlePress('Test')} title="Test Speaker" width={200} />
+                onPress={() => {
+                    handlePress('Test')
+                    setSpeakerIndicatorVisible(true)
+                    }
+                } 
+                title="Test Speaker" 
+                width={200} />
         </View>
    );
 }
