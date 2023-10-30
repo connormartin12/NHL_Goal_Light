@@ -168,7 +168,15 @@ function useBLE() {
     const disconnectFromDevice = () => {
         if (connectedDevice) {
             if (connectedDevice == null) {
-                bleManager.cancelDeviceConnection(connectedDevice.id);
+                bleManager.cancelDeviceConnection(connectedDevice.id)
+                    .then(() => {
+                        console.log("Disconnected from device");
+                    });
+            } else {
+                connectedDevice.cancelConnection()
+                .then(() => {
+                    console.log("Disconnected from device");
+                });
             }
             setConnectedDevice(null);
             setEspSSID("");
