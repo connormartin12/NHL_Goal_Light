@@ -5,22 +5,27 @@ import colors from '../config/colors';
 import Screen from './Screen';
 
 const DeviceModalListItem = (props) => {
-    const { closeModal, connectToPeripheral, item } = props;
+    const { closeModal, connectToPeripheral, item, showConnectingIndicator } = props;
 
     const connectAndCloseModal = useCallback(() => {
+        showConnectingIndicator();
         connectToPeripheral(item.item);
         closeModal();
-    }, [closeModal, connectToPeripheral, item.item]);
+    }, [closeModal, connectToPeripheral, item.item, showConnectingIndicator]);
 
     return (
-        <TouchableOpacity onPress={connectAndCloseModal} style={modalStyle.ctaButton}>
+        <TouchableOpacity 
+            onPress={() => {
+            connectAndCloseModal();
+            }} 
+            style={modalStyle.ctaButton}>
             <Text style={modalStyle.ctaButtonText}>{item.item.name}</Text>
         </TouchableOpacity>
     );
 };
 
 const DeviceModal = (props) => {
-    const { closeModal, connectToPeripheral, devices, visible } = props;
+    const { closeModal, connectToPeripheral, devices, showConnectingIndicator, visible } = props;
 
     const renderDeviceModalListItem = useCallback((item) => {
         return (
@@ -28,6 +33,7 @@ const DeviceModal = (props) => {
                 closeModal={closeModal}
                 connectToPeripheral={connectToPeripheral} 
                 item={item} 
+                showConnectingIndicator={showConnectingIndicator}
             />
         );
     }, [closeModal, connectToPeripheral]
@@ -45,7 +51,11 @@ const DeviceModal = (props) => {
                 <Text style={modalStyle.modalTitleText}>
                     Tap on a device to connect
                 </Text>
-                <FlatList contentContainerStyle={modalStyle.modalFlatlistContiner} data={devices} renderItem={renderDeviceModalListItem}/>
+                <FlatList 
+                    contentContainerStyle={modalStyle.modalFlatlistContiner}
+                    data={devices}
+                    renderItem={renderDeviceModalListItem}
+                />
             </Screen>
         </Modal>
     );

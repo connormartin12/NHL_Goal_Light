@@ -1,7 +1,7 @@
 import React from 'react';
 import LottieView from 'lottie-react-native';
 
-function SpeakerAnimation({closeIndicator, visible = false}) {
+function ConnectingIndicator({closeIndicator, visible = false}) {
     if (!visible) return null;
 
     return (
@@ -9,12 +9,12 @@ function SpeakerAnimation({closeIndicator, visible = false}) {
             autoPlay={true}
             loop={false}
             onAnimationFinish={closeIndicator}
-            source={require('../../assets/animations/loading-bar.json')}
+            source={require('../../assets/animations/loading-circle.json')}
             style={{
-                height: 18,
+                height: 50,
             }}
         />
     );
 }
 
-export default SpeakerAnimation;
+export default ConnectingIndicator;

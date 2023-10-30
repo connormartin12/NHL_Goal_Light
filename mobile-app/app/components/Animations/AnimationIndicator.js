@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
-import LottieView from 'lottie-react-native';
 import SpeakerAnimation from './SpeakerAnimation';
+import ConnectingIndicator from './ConnectingIndicator';
 
-function AnimationIndicator({closeAnimation, visible }) {
+function AnimationIndicator({Animation=ConnectingIndicator, closeAnimation, visible }) {
     return (
         <Modal 
             animationType="fade"
@@ -12,7 +12,7 @@ function AnimationIndicator({closeAnimation, visible }) {
             visible={visible}
         >
             <View style={styles.modalContainer}>
-                <SpeakerAnimation closeSpeakerIndicator={closeAnimation} visible={visible} />
+                <Animation closeIndicator={closeAnimation} visible={visible} />
             </View>
         </Modal>
     );

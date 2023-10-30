@@ -3,17 +3,19 @@ import { StyleSheet } from 'react-native';
 import * as Yup from 'yup';
 
 // Remove with better styling
-import { Modal, Pressable, Text } from 'react-native';
+import {Pressable, Text } from 'react-native';
 
-import AdditionalSettingsModal, { additionalSettingsModal } from '../components/AdditionalSettingsModal';
+import AdditionalSettingsModal from '../components/AdditionalSettingsModal';
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
 import { colors, teams } from '../config';
 import Screen from '../components/Screen';
 import TeamPickerComponent from '../components/TeamPickerComponent';
 import useBLE from '../hooks/useBLE';
 
+import AnimationIndicator from '../components/Animations/AnimationIndicator';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
+import ConnectingIndicator from '../components/Animations/ConnectingIndicator';
 import DeviceModal from '../components/DeviceConnectionModal';
 
 let validationSchema = Yup.object({
@@ -45,6 +47,7 @@ function UserInputScreen( {navigation} ) {
     const [deviceModalVisible, setDeviceModalVisible] = useState(false);
     const [settingsModalVisible, setSettingsModalVisible] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(true);
+    const [connectingIndicatorVisible, setConnectingIndicatorVisible] = useState(false);
 
     const scanForDevices = async () => {
         const isPermissionsEnabled = await requestPermissions();
@@ -61,6 +64,14 @@ function UserInputScreen( {navigation} ) {
     const openModal = () => {
         scanForDevices();
         setDeviceModalVisible(true);
+    };
+
+    const showConnectingIndicator = () => {
+        setConnectingIndicatorVisible(true);
+    };
+
+    const hideConnectingIndicator = () => {
+        setConnectingIndicatorVisible(false);
     };
 
     useEffect(() => {
@@ -95,6 +106,7 @@ function UserInputScreen( {navigation} ) {
                 closeModal={hideModal}
                 connectToPeripheral={connectToDevice}
                 devices={allDevices}
+                showConnectingIndicator={showConnectingIndicator}
                 visible={deviceModalVisible}
             />
 
@@ -150,7 +162,7 @@ function UserInputScreen( {navigation} ) {
                     width={inputFieldWidth}
                 />
                 <Pressable 
-                    // disabled={connectedDevice? false : true} 
+                    disabled={connectedDevice? false : true} 
                     onPress={additionalSettingsModal}
                     style={styles.additionalSettings}
                 >
@@ -168,6 +180,11 @@ function UserInputScreen( {navigation} ) {
                     title="Save Settings" 
                     width={inputFieldWidth} 
                     disabled={connectedDevice? false : true}
+                />
+                <AnimationIndicator
+                    Animation={ConnectingIndicator}
+                    closeAnimation={hideConnectingIndicator}
+                    visible={connectingIndicatorVisible}
                 />
             </AppForm>
         </Screen>

@@ -53,7 +53,7 @@ function VolumeSelectionComponent({currentSelection, sendVolumeSetting, width}) 
                 })}
             </View>
             <AnimationIndicator
-                animation={SpeakerAnimation}
+                Animation={SpeakerAnimation}
                 closeAnimation={closeSpeakerIndicator}    
                 visible={speakerIndicatorVisible}
             />
