@@ -82,15 +82,15 @@ function UserInputScreen( {navigation} ) {
         setSettingsModalVisible(true);
     };
 
-    const handleSubmit = ( userData, { resetForm }) => {
+    const handleSubmit = async ( userData, { resetForm }) => {
         if (!connectedDevice) {
             alert("No bluetooth device connected");
             return;
         }
 
-        writeData(ssid=userData.ssid, password=userData.password, 
-                  teamSelection=userData.team, delay=userData.delay);
-        disconnectFromDevice();
+        await writeData(ssid=userData.ssid, password=userData.password, 
+                  teamSelection=userData.team, delay=userData.delay)
+            .then(() => disconnectFromDevice());
         resetForm();
     };
 

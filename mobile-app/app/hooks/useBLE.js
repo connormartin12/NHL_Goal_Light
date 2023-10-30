@@ -112,31 +112,35 @@ function useBLE() {
     };
 
     const writeData = async ( ssid, password, teamSelection, delay ) => {
-        const SSID = base64.encode(ssid);
-        const Password = base64.encode(password);
-        const Team = base64.encode(JSON.stringify(teamSelection));
-        const Delay = base64.encode(delay.toString());
-
-        if (connectedDevice) {
-            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_SSID, SSID)
-                .then(() => {
-                    console.log("SSID Written");
-                });
-            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_PASSWORD, Password)
-                .then(() => {
-                    console.log("Password Written");
-                });
-            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_TEAM, Team)
-                .then(() => {
-                    console.log("Team Written");
-                });
-            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_DELAY, Delay)
-                .then(() => {
-                    console.log("Delay Written");
-                });
-        } else {
-            console.log("No device connected");
-        }
+        return new Promise((resolve, reject) => {
+            const SSID = base64.encode(ssid);
+            const Password = base64.encode(password);
+            const Team = base64.encode(JSON.stringify(teamSelection));
+            const Delay = base64.encode(delay.toString());
+    
+            if (connectedDevice) {
+                connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_SSID, SSID)
+                    .then(() => {
+                        console.log("SSID Written");
+                    });
+                connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_PASSWORD, Password)
+                    .then(() => {
+                        console.log("Password Written");
+                    });
+                connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_TEAM, Team)
+                    .then(() => {
+                        console.log("Team Written");
+                    });
+                connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_DELAY, Delay)
+                    .then(() => {
+                        console.log("Delay Written");
+                        resolve();
+                    });
+            } else {
+                console.log("No device connected");
+                reject();
+            }
+        });
     };
 
     const sendVolumeSetting = async (setting) => {
@@ -172,7 +176,8 @@ function useBLE() {
                     .then(() => {
                         console.log("Disconnected from device");
                     });
-            } else {
+            } 
+            else {
                 connectedDevice.cancelConnection()
                 .then(() => {
                     console.log("Disconnected from device");
