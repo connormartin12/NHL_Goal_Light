@@ -157,16 +157,20 @@ function useBLE() {
     };
 
     const resetDevice = async () => {
-        const ResetInstruction = base64.encode("reset");
-
-        if (connectedDevice) {
-            connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_RESET, ResetInstruction)
-                .then(() => {
-                    console.log("Reset Instruction Written");
-                });
-        } else {
-            console.log("No device connected");
-        }
+        return new Promise((resolve, reject) => {
+            const ResetInstruction = base64.encode("reset");
+    
+            if (connectedDevice) {
+                connectedDevice.writeCharacteristicWithResponseForService(ESP32_UUID, ESP32_RESET, ResetInstruction)
+                    .then(() => {
+                        console.log("Reset Instruction Written");
+                        resolve();
+                    });
+            } else {
+                console.log("No device connected");
+                reject();
+            }
+        });
     };
 
     const disconnectFromDevice = () => {
@@ -174,10 +178,18 @@ function useBLE() {
             if (connectedDevice == null) {
                 bleManager.cancelDeviceConnection(connectedDevice.id)
                     .then(() => {
+                        console.log("BleManager disconnected");
+                    });
+                connectedDevice.cancelConnection()
+                    .then(() => {
                         console.log("Disconnected from device");
                     });
             } 
             else {
+                bleManager.cancelDeviceConnection(connectedDevice.id)
+                    .then(() => {
+                        console.log("BleManager disconnected");
+                    });
                 connectedDevice.cancelConnection()
                 .then(() => {
                     console.log("Disconnected from device");

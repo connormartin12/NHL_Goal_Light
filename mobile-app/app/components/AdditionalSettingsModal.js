@@ -19,8 +19,8 @@ function AdditionalSettingsModal(props) {
             {
                 text: 'Reset Device',
                 onPress: () => {
-                    resetPeripheral();
-                    disconnectFromPeripheral();
+                    resetPeripheral()
+                        .then(() => disconnectFromPeripheral())
                     closeModal();
                     resetForm();
                 }
