@@ -184,9 +184,6 @@ static int user_volume_readWrite(uint16_t conn_handle, uint16_t attr_handle, str
 static int reset_device(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     char incoming_message[6];
-    // memcpy(incoming_message, ctxt->om->om_data, ctxt->om->om_len);
-    // incoming_message[ctxt->om->om_len] = '\x0';
-    // printf("Incoming message: %s\n", incoming_message);
     store_incoming_message(incoming_message, ctxt->om->om_data, ctxt->om->om_len, true);
     if (strcmp(incoming_message, "reset") == 0) {
         reset = true;

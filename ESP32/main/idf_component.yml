@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/esp_insights: "^1.0.1"
   joltwallet/littlefs: "^1.8.0"
   espressif/esp_lvgl_port: "^1.2.0~1"
   lvgl/lvgl: "^8.3.9"

@@ -116,7 +116,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_name)
         }
     }
 
-    ESP_LOGE(TAG, "No game found");
+    ESP_LOGW(TAG, "No game found");
     game_found = false;
     goto end;
 

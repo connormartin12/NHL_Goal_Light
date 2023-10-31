@@ -1,27 +1,57 @@
 dependencies:
+  espressif/cbor:
+    component_hash: 440f4ee4504841cc9b4f3a8ef755776a612ac9dace355514c68b999868f990ff
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 0.6.0~1
+  espressif/esp_diag_data_store:
+    component_hash: 8849195251dbb8a2d7268335277cfa310cef36e4ac1e90cd59ad3be4269a30d7
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.0.1
+  espressif/esp_diagnostics:
+    component_hash: 83c3fdf56caba06846017ece7002b0498476a3af15d0d5a3d86bd944443fd7b9
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.0.1
+  espressif/esp_insights:
+    component_hash: 2472a19de98a8b991baeeac7209765b70ce14ec2b1435dbed3abd020dd0f7227
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.0.1
   espressif/esp_lvgl_port:
     component_hash: 11100917e7bc3166b56c6519b61d63b623db9abc8470e5d20439b3b2492477df
     source:
       service_url: https://api.components.espressif.com/
       type: service
     version: 1.3.0
+  espressif/rmaker_common:
+    component_hash: ed9257c3e6d9af5a945e9fcc4e7b9235a56816d53fd42de95b523fe53a4b9b98
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.4.3
   idf:
     component_hash: null
     source:
       type: idf
     version: 5.1.1
   joltwallet/littlefs:
-    component_hash: ded0e488095259506b631b6252d9034fd6f11cc8580e8df5fef6a93200449428
+    component_hash: 4943c7f0932795ef722fa5d846a3bbf52467d87c01fdab054d3161853bb5f275
     source:
       service_url: https://api.components.espressif.com/
       type: service
-    version: 1.9.2
+    version: 1.10.2
   lvgl/lvgl:
     component_hash: 51022b16bce6ee90f54a8bd21cd6d497d886916899b577b1bebb9125b91e23fc
     source:
       service_url: https://api.components.espressif.com/
       type: service
     version: 8.3.10
-manifest_hash: b0e8acbfff6575e1ad811923bffa64d5a38c8aa283891ca2a5762f936c35b37d
+manifest_hash: 538a02a15943cef7e3f2beffcfe5c52f2f9bf5e3995215f35f1cba351a1e0189
 target: esp32s3
 version: 1.0.0

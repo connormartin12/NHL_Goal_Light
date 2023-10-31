@@ -79,7 +79,7 @@ esp_err_t wifi_connect_sta(const char *ssid, const char *pass)
             return ESP_FAIL;
         }
         else {
-            ESP_LOGE(TAG, "UNEXPECTED EVENT");
+            ESP_LOGE(TAG, "UNEXPECTED WIFI EVENT");
             return ESP_FAIL;
         }
 }
