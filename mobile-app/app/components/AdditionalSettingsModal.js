@@ -46,7 +46,7 @@ function AdditionalSettingsModal(props) {
                     sendVolumeSetting={sendVolumeSetting}
                     width={maxScreenWidth}/>
                 <AppButton 
-                    color="red"
+                    color={colors.error}
                     onPress={resetAndCloseModal}
                     title="Reset Device"
                     width={maxScreenWidth} 

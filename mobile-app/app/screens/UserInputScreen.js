@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import * as Yup from 'yup';
 
-// Remove with better styling
-import {Pressable, Text } from 'react-native';
-
 import AdditionalSettingsModal from '../components/AdditionalSettingsModal';
 import { AppForm, AppFormField, AppFormPicker, AppFormSlider, SubmitButton } from '../components/forms';
 import { colors, teams } from '../config';
@@ -14,6 +11,7 @@ import useBLE from '../hooks/useBLE';
 
 import AnimationIndicator from '../components/Animations/AnimationIndicator';
 import AppButton from '../components/AppButton';
+import AppLink from '../components/AppLink';
 import AppText from '../components/AppText';
 import ConnectingIndicator from '../components/Animations/ConnectingIndicator';
 import DeviceModal from '../components/DeviceConnectionModal';
@@ -161,13 +159,12 @@ function UserInputScreen( {navigation} ) {
                     valueSuffix="Seconds"
                     width={inputFieldWidth}
                 />
-                <Pressable 
-                    disabled={connectedDevice? false : true} 
+                <AppLink 
+                    disabled={connectedDevice? false : true}
                     onPress={additionalSettingsModal}
                     style={styles.additionalSettings}
-                >
-                    <Text style={styles.additionalSettingsText}>Additional Settings</Text>
-                </Pressable>
+                    linkText="Additional Settings"
+                />
                 <AdditionalSettingsModal 
                     closeModal={hideModal}
                     disconnectFromPeripheral={disconnectFromDevice}
@@ -193,11 +190,7 @@ function UserInputScreen( {navigation} ) {
 
 const styles = StyleSheet.create({
     additionalSettings: {
-        marginTop: 24,
-    },
-    additionalSettingsText: {
-        fontSize: 20,
-        textDecorationLine: 'underline',
+        marginTop: 20,
     },
     container: {
         flex: 1,
@@ -215,7 +208,7 @@ const styles = StyleSheet.create({
         width: inputFieldWidth,
     },
     connectionWarning: {
-        color: "red",
+        color: colors.error,
         marginVertical: 5,
     },
 });

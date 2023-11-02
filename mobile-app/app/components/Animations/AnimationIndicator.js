@@ -1,7 +1,8 @@
 import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
-import SpeakerAnimation from './SpeakerAnimation';
 import ConnectingIndicator from './ConnectingIndicator';
+
+import { colors } from '../../config';
 
 function AnimationIndicator({Animation=ConnectingIndicator, closeAnimation, visible }) {
     return (
@@ -24,7 +25,7 @@ const styles=StyleSheet.create({
     }, 
     modalContainer: {
         alignItems: 'center',
-        backgroundColor: 'rgba(211, 211, 211, 0.9)',
+        backgroundColor: colors.animationBackground,
         flex: 1,
         gap: 20,
         justifyContent: 'center',

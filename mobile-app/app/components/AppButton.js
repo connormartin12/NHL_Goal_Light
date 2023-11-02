@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     text: {
-        color: 'white',
+        color: colors.secondary,
         fontSize: 18,
         textTransform: 'uppercase',
         fontWeight: 'bold',

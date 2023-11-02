@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
         width: 80,
     },
     text: {
-        color: 'black',
         fontSize: 18,
         textTransform: 'uppercase',
         fontWeight: 'bold',
