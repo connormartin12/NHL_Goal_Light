@@ -123,7 +123,7 @@ void goal_scored(void)
     sprintf(buffer, "%s Score!!!", userInfo.team_name);
     const char *team_scored_text = buffer;
 
-    set_oled_text(team_scored_text);
+    set_team_scored(team_scored_text);
     gpio_set_level(LED_PIN, 1);
     play_wav_file(userInfo.volume, 0);
     gpio_set_level(LED_PIN, 0);

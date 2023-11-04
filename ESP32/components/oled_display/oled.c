@@ -45,6 +45,13 @@ void set_oled_text(const char *text)
     lv_label_set_text(info_label, text);
 }
 
+void set_team_scored(const char *text)
+{
+    if (info_screen == lv_disp_get_scr_act(disp))
+        lv_scr_load(info_screen);
+    lv_label_set_text(score_label, text);
+}
+
 void update_oled_score()
 {
     if (info_screen == lv_disp_get_scr_act(disp))
@@ -68,7 +75,7 @@ void setup_ui()
     score_screen = lv_obj_create(NULL);
     score_label = lv_label_create(score_screen);
     lv_style_init(&score_style);
-    lv_style_set_text_font(&score_style, &lv_font_montserrat_24);
+    lv_style_set_text_font(&score_style, &lv_font_montserrat_20);
     lv_obj_add_style(score_label, &score_style, 0);
     lv_obj_set_width(score_label, disp->driver->hor_res);
     lv_obj_align(score_label, LV_ALIGN_TOP_LEFT, 0, 0);
