@@ -84,39 +84,42 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
     cJSON *homeTeam = cJSON_GetObjectItemCaseSensitive(game, "homeTeam");
     cJSON *homeTeamAbbreviation = cJSON_GetObjectItemCaseSensitive(homeTeam, "abbrev");
 
+    int homeScore;
+    int awayScore;
+
     if (strcmp(gameState->valuestring, "LIVE") == 0 || strcmp(gameState->valuestring, "OFF") == 0 ||
         strcmp(gameState->valuestring, "FINAL") == 0 || (strcmp(gameState->valuestring, "CRIT") == 0)) {
         cJSON *awayTeamScore = cJSON_GetObjectItemCaseSensitive(awayTeam, "score");
         cJSON *homeTeamScore = cJSON_GetObjectItemCaseSensitive(homeTeam, "score");
-        int homeScore = homeTeamScore->valueint;
-        int awayScore = awayTeamScore->valueint;
-
-        if (strcmp(homeTeamAbbreviation->valuestring, user_team_abbrev) == 0) {
-            if (!init_score && (homeScore > user_team_score)) {
-                scored = true;
-            }
-            user_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
-            memcpy(user_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
-            other_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
-            memcpy(other_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
-
-            user_team_score = homeScore;
-            other_team_score = awayScore;
-        } else {
-            if (!init_score && (awayScore > user_team_score)) {
-                scored = true;
-            }
-            user_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
-            memcpy(user_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
-            other_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
-            memcpy(other_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
-
-            user_team_score = awayScore;
-            other_team_score = homeScore;
-        }
+        homeScore = homeTeamScore->valueint;
+        awayScore = awayTeamScore->valueint;
     } else {
-        user_team_score = 0;
-        other_team_score = 0;
+        homeScore = 0;
+        awayScore = 0;
+    }
+
+    if (strcmp(homeTeamAbbreviation->valuestring, user_team_abbrev) == 0) {
+        if (!init_score && (homeScore > user_team_score)) {
+            scored = true;
+        }
+        user_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
+        memcpy(user_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
+        other_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
+        memcpy(other_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
+
+        user_team_score = homeScore;
+        other_team_score = awayScore;
+    } else {
+        if (!init_score && (awayScore > user_team_score)) {
+            scored = true;
+        }
+        user_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
+        memcpy(user_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
+        other_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
+        memcpy(other_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
+
+        user_team_score = awayScore;
+        other_team_score = homeScore;
     }
     goto end;
 
