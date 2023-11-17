@@ -15,6 +15,7 @@
     "idf.toolsPath": "/Users/connormartin/esp/esp-idf/tools",
     "idf.flashType": "UART",
     "files.associations": {
+        "*.json": "jsonl",
         "regex": "c",
         "compare": "c",
         "complex": "c",
@@ -36,6 +37,7 @@
         "bitset": "c",
         "memory": "c",
         "random": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "chrono": "c"
     }
 }

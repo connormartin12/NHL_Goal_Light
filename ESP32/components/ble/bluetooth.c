@@ -99,7 +99,7 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
             return 0;
 
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
-            if (ctxt->om->om_len < 50) {
+            if (ctxt->om->om_len < 70) {
                 store_incoming_message(info_buffer->team, ctxt->om->om_data, ctxt->om->om_len, true);
 
                 cJSON *team_object = cJSON_Parse(info_buffer->team);
@@ -116,6 +116,9 @@ static int user_team_readWrite(uint16_t conn_handle, uint16_t attr_handle, struc
                 cJSON *team_name = cJSON_GetObjectItemCaseSensitive(team_object, "name");
                 store_incoming_message(info_buffer->team_name, team_name->valuestring, 
                                        strlen(team_name->valuestring), true);
+                cJSON *team_abbrev = cJSON_GetObjectItemCaseSensitive(team_object, "abbrev");
+                store_incoming_message(info_buffer->team_abbrev, team_abbrev->valuestring,
+                                       strlen(team_abbrev->valuestring), true);
 
                 xEventGroupSetBits(infoEventGroup, TEAM_BIT);
             } else

@@ -133,15 +133,10 @@ void get_score(void *params)
 {
     while (true)
     {
-        https_get_score(userInfo.team_name);
+        https_get_score(userInfo.team_abbrev);
         if (scored == true)
             goal_scored();
         if (game_found == true) {
-            if (init_abbr == true) {
-                https_get_abbr(user_team_id);
-                https_get_abbr(other_team_id);
-                init_abbr = false;
-            }
             update_oled_score();
 
             printf("%s: %d\n%s: %d\n", user_team_abbr, user_team_score, other_team_abbr, other_team_score);
