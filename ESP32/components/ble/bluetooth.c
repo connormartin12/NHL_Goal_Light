@@ -171,7 +171,7 @@ static int user_volume_readWrite(uint16_t conn_handle, uint16_t attr_handle, str
                     play_wav_file(info_buffer->volume, 1);
                 }
                 else {
-                    store_incoming_message(info_buffer->wifi_ssid, ctxt->om->om_data, ctxt->om->om_len, false);
+                    store_incoming_message(info_buffer->volume, ctxt->om->om_data, ctxt->om->om_len, false);
                 }
             } else 
                 ESP_LOGW(TAG, "Attempted to write volume value longer than allowed length");
