@@ -121,6 +121,8 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
         user_team_score = awayScore;
         other_team_score = homeScore;
     }
+    if (init_score) 
+        init_score = false;
     goto end;
 
 end:
