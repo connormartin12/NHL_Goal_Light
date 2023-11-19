@@ -19,6 +19,42 @@ bool init_score = true;
 bool game_found = false;
 bool scored = false;
 
+void set_team_abbreviations(char *userTeam, char *otherTeam)
+{
+    user_team_abbr = (char *)calloc(sizeof(userTeam), sizeof(char));
+    memcpy(user_team_abbr, userTeam, strlen(userTeam));
+    other_team_abbr = (char *)calloc(sizeof(otherTeam), sizeof(char));
+    memcpy(other_team_abbr, otherTeam, strlen(otherTeam));
+}
+
+void get_time(char *return_date)
+{
+    setenv("TZ", "GMT-6", 1);
+    tzset();
+    time_t current_date = time(NULL);
+    struct tm time = *localtime(&current_date);
+    
+    int month = time.tm_mon + 1;
+    char month_str[15];
+    if (month < 10) {
+        sprintf(month_str, "0%d", month);
+    } else {
+        sprintf(month_str, "%d", month);
+    }
+    int day = time.tm_mday - 1;
+    char day_str[15];
+    if (day < 10) {
+        sprintf(day_str, "0%d", day);
+    } else {
+        sprintf(day_str, "%d", day);
+    }
+
+    printf("Time: %d:%d\n", time.tm_hour, time.tm_min);
+
+    sprintf(return_date, "%d-%s-%s", time.tm_year + 1900, month_str, day_str);
+    /* End of get time function */
+}
+
 esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
 {
     int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
@@ -41,34 +77,9 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
     cJSON *games = cJSON_GetObjectItemCaseSensitive(buffer_json, "games");
     cJSON *game = cJSON_GetArrayItem(games, 0);
     cJSON *date = cJSON_GetObjectItemCaseSensitive(game, "gameDate");
-
-    /* Get Time Function, Factor out in future */
-    setenv("TZ", "GMT-6", 1);
-    tzset();
-    time_t current_date = time(NULL);
-    struct tm time = *localtime(&current_date);
-    char return_date[50]; // "yyyy-mm-dd"
     
-    int month = time.tm_mon + 1;
-    char month_str[15];
-    if (month < 10) {
-        sprintf(month_str, "0%d", month);
-    } else {
-        sprintf(month_str, "%d", month);
-    }
-    int day = time.tm_mday - 1;
-    char day_str[15];
-    if (day < 10) {
-        sprintf(day_str, "0%d", day);
-    } else {
-        sprintf(day_str, "%d", day);
-    }
-
-    printf("Time: %d:%d\n", time.tm_hour, time.tm_min);
-
-    sprintf(return_date, "%d-%s-%s", time.tm_year + 1900, month_str, day_str);
-    /* End of get time function */
-
+    char return_date[50];
+    get_time(return_date);
     printf("Current date: %s\nGame Date: %s\n", return_date, date->valuestring);
     if (strcmp(return_date, date->valuestring) == 0) {
         game_found = true;
@@ -102,10 +113,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
         if (!init_score && (homeScore > user_team_score)) {
             scored = true;
         }
-        user_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
-        memcpy(user_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
-        other_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
-        memcpy(other_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
+        set_team_abbreviations(homeTeamAbbreviation->valuestring, awayTeamAbbreviation->valuestring);
 
         user_team_score = homeScore;
         other_team_score = awayScore;
@@ -113,10 +121,7 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
         if (!init_score && (awayScore > user_team_score)) {
             scored = true;
         }
-        user_team_abbr = (char *)calloc(sizeof(awayTeamAbbreviation->valuestring), sizeof(char));
-        memcpy(user_team_abbr, awayTeamAbbreviation->valuestring, strlen(awayTeamAbbreviation->valuestring));
-        other_team_abbr = (char *)calloc(sizeof(homeTeamAbbreviation->valuestring), sizeof(char));
-        memcpy(other_team_abbr, homeTeamAbbreviation->valuestring, strlen(homeTeamAbbreviation->valuestring));
+        set_team_abbreviations(awayTeamAbbreviation->valuestring, homeTeamAbbreviation->valuestring);
 
         user_team_score = awayScore;
         other_team_score = homeScore;
