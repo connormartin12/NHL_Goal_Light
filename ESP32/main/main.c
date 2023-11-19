@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "driver/gpio.h"
-#include "esp_insights.h"
 #include "esp_log.h"
-#include "esp_rmaker_utils.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
@@ -36,8 +34,6 @@ const char *defaultDelay = "30";
 const char *defaultVolume = "Low";
 int delay;
 bool receiver_waiting = false;
-
-extern const char insights_auth_key_start[] asm("_binary_NHL_Auth_Key_txt_start");
 
 void connect_to_wifi(void)
 {
@@ -195,18 +191,6 @@ void app_main(void)
             ESP_LOGE(NVS_TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(result));
             break;
     }
-
-    // Setup ESP Insights
-    esp_rmaker_time_sync_init(NULL);
-    esp_insights_config_t insights_config = {
-        .log_type = ESP_DIAG_LOG_TYPE_ERROR | ESP_DIAG_LOG_TYPE_EVENT,
-        .auth_key = insights_auth_key_start,
-    };
-    retry = esp_insights_init(&insights_config);
-    if (retry != ESP_OK) {
-        ESP_LOGE(INSIGHTS_TAG, "Failed to initialize ESP Insights, err: 0x%x", retry);
-    }
-    ESP_ERROR_CHECK(retry);
 
     // Check for software updates
     esp_err_t err = run_ota();
