@@ -34,9 +34,11 @@ lv_obj_t *info_screen;
 lv_obj_t *score_screen;
 lv_obj_t *info_label;
 lv_obj_t *score_label;
+lv_obj_t *date_label;
 
 static lv_style_t info_style;
 static lv_style_t score_style;
+static lv_style_t date_style;
 
 void set_oled_text(const char *text)
 {
@@ -58,6 +60,7 @@ void update_oled_score()
         lv_scr_load(score_screen);
     lv_label_set_text_fmt(score_label, "%s: %d\n%s: %d", user_team_abbr, user_team_score, 
                                                    other_team_abbr, other_team_score);
+    lv_label_set_text_fmt(date_label, "%s-%s-%s", game_month, game_day, game_year);
 }
 
 void setup_ui()
@@ -79,6 +82,13 @@ void setup_ui()
     lv_obj_add_style(score_label, &score_style, 0);
     lv_obj_set_width(score_label, disp->driver->hor_res);
     lv_obj_align(score_label, LV_ALIGN_TOP_LEFT, 0, 0);
+    date_label = lv_label_create(score_screen);
+    lv_style_init(&date_style);
+    lv_style_set_text_font(&date_style, &lv_font_montserrat_14);
+    lv_obj_add_style(date_label, &date_style, 0);
+    lv_obj_set_width(date_label, disp->driver->hor_res);
+    lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+
 
     // Set information screen as initial screen
     lv_scr_load(info_screen);

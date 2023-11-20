@@ -280,7 +280,7 @@ void ble_app_advertise(void)
     fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
     const char *device_name;
     device_name = ble_svc_gap_device_name();
-    fields.name= (uint8_t *)device_name;
+    fields.name = (uint8_t *)device_name;
     fields.name_len = strlen(device_name);
     fields.name_is_complete = 1;
     ble_gap_adv_set_fields(&fields);

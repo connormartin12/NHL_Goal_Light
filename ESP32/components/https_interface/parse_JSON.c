@@ -11,6 +11,9 @@
 #include "esp_heap_caps.h"
 
 static const char *TAG = "PARSE JSON";
+char game_month[3];
+char game_day[3];
+char game_year[5];
 char *user_team_abbr;
 char *other_team_abbr;
 int user_team_score = 0;
@@ -18,6 +21,13 @@ int other_team_score = 0;
 bool init_score = true;
 bool game_found = false;
 bool scored = false;
+
+void set_game_date(char *date)
+{
+    memcpy(game_year, strtok(date, "-"), sizeof(game_year));
+    memcpy(game_month, strtok(NULL, "-"), sizeof(game_month));
+    memcpy(game_day, strtok(NULL, "-"), sizeof(game_day));
+}
 
 void set_team_abbreviations(char *userTeam, char *otherTeam)
 {
@@ -27,38 +37,10 @@ void set_team_abbreviations(char *userTeam, char *otherTeam)
     memcpy(other_team_abbr, otherTeam, strlen(otherTeam));
 }
 
-void get_time(char *return_date)
-{
-    setenv("TZ", "GMT-6", 1);
-    tzset();
-    time_t current_date = time(NULL);
-    struct tm time = *localtime(&current_date);
-    
-    int month = time.tm_mon + 1;
-    char month_str[15];
-    if (month < 10) {
-        sprintf(month_str, "0%d", month);
-    } else {
-        sprintf(month_str, "%d", month);
-    }
-    int day = time.tm_mday - 1;
-    char day_str[15];
-    if (day < 10) {
-        sprintf(day_str, "0%d", day);
-    } else {
-        sprintf(day_str, "%d", day);
-    }
-
-    printf("Time: %d:%d\n", time.tm_hour, time.tm_min);
-
-    sprintf(return_date, "%d-%s-%s", time.tm_year + 1900, month_str, day_str);
-    /* End of get time function */
-}
-
 esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
 {
     int dram = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-    printf("\ndram = %d\n\n", dram);
+    printf("\ndram = %d\n", dram);
 
     cJSON *buffer_json = cJSON_Parse(bufferStr);
     if(buffer_json == NULL)
@@ -77,14 +59,13 @@ esp_err_t parse_score(char *bufferStr, char *user_team_abbrev)
     cJSON *games = cJSON_GetObjectItemCaseSensitive(buffer_json, "games");
     cJSON *game = cJSON_GetArrayItem(games, 0);
     cJSON *date = cJSON_GetObjectItemCaseSensitive(game, "gameDate");
-    
-    char return_date[50];
-    get_time(return_date);
-    printf("Current date: %s\nGame Date: %s\n", return_date, date->valuestring);
-    if (strcmp(return_date, date->valuestring) == 0) {
-        game_found = true;
-    } else {
+    printf("Game Date: %s\n", date->valuestring);
+    set_game_date(date->valuestring);
+    if (game == NULL) {
+        game_found = false;
         goto end;
+    } else {
+        game_found = true;
     }
 
     cJSON *gameState = cJSON_GetObjectItemCaseSensitive(game, "gameState");

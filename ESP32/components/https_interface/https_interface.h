@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+extern char game_month[3];
+extern char game_day[3];
+extern char game_year[5];
 extern char *user_team_abbr;
 extern char *other_team_abbr;
 extern int user_team_score;
